@@ -8,7 +8,7 @@
 
 | File | Ticket | What it does |
 | --- | --- | --- |
-| [`sudoers.d/50-helpdesk-falcon`](sudoers.d/50-helpdesk-falcon) | OPS-5002 | Helpdesk may restart and check one service, with their own password. Replaces a rule that allowed `vim` as root. |
+| [`sudoers.d/50-helpdesk-falcon`](sudoers.d/50-helpdesk-falcon) | OPS-5002 | Helpdesk may restart one service, with their own password, and nothing else (`noexec`). Replaces a rule that allowed `vim` as root. |
 | [`sshd_config.d/10-hardening.conf`](sshd_config.d/10-hardening.conf) | SEC-6003 | No root login, 3 tries, 30-second login window, no X11, only the `ssh-users` group |
 | [`sshd_config.d/20-revoked-keys.conf`](sshd_config.d/20-revoked-keys.conf) | SEC-6004 | A stolen laptop's key is refused for every account, even if someone adds it back |
 
@@ -36,6 +36,7 @@ Run as the affected users (real logins and real `sudo` with their own password) 
 | dpatel (helpdesk): `sudo systemctl restart falcon-web.service` | ✅ ALLOWED (service PID changed) |
 | dpatel: `sudo systemctl stop falcon-web.service` | ⛔ DENIED |
 | dpatel: `sudo cat /etc/shadow` | ⛔ DENIED |
+| dpatel: `sudo systemctl status falcon-web.service` | ⛔ DENIED (not needed: `systemctl status` works without sudo) |
 | dpatel: `vim` as root | ⛔ not allowed by the policy (`sudo -l -U dpatel`; legacy rule removed) |
 | aokafor (in `ssh-users`): SSH key login | ✅ ALLOWED |
 | jkim (not in `ssh-users`): SSH key login | ⛔ DENIED by `AllowGroups` |
@@ -47,7 +48,7 @@ Run as the affected users (real logins and real `sudo` with their own password) 
 - **Drop-in files** (`sudoers.d`, `sshd_config.d`): small, reviewable, one ticket per file, and package updates never overwrite them.
 - **Validate before you apply**: one typo in sudoers can lock every admin out; `sshd -t` catches a bad SSH config before it takes the server off the network.
 - **Group, not person** for permanent roles (`%helpdesk`, `ssh-users`): joiners and leavers are handled by membership, and reviews look at one group.
-- **Never an editor, pager or shell in a sudo rule**: `vim`, `less` and `bash` all let you run anything as root.
+- **Never an editor, pager or shell in a sudo rule**: `vim`, `less` and `bash` all let you run anything as root. That includes commands that *open* a pager: `systemctl status` as root can drop into `less`, so it stays out of the rule (it needs no sudo anyway).
 
 ## What I learned
 
