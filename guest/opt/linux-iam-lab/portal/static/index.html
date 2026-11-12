@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Linux IAM Lab</title>
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="topbar">
+  <a class="brand" href="#/" aria-label="Linux IAM Lab home">
+    <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path fill="currentColor" d="M12 2 4 5v6c0 5 3.4 9.7 8 11 4.6-1.3 8-6 8-11V5l-8-3Zm0 5a2.5 2.5 0 0 1 1 4.8V15h-2v-3.2A2.5 2.5 0 0 1 12 7Z"/></svg>
+    <span>Linux IAM Lab</span>
+  </a>
+  <div class="search-wrap">
+    <input id="search" type="search" placeholder="Search lessons, exercises, commands, glossary…  ( / )" autocomplete="off" aria-label="Search">
+    <div id="search-results" class="search-results" hidden></div>
+  </div>
+  <div class="progress-pill" title="Exercises passed"><div class="bar"><div id="progress-fill"></div></div><span id="progress-text">0 / 0</span></div>
+  <div class="status" id="status">
+    <span class="dot" id="st-vm" title="Linux VM services"></span><span class="st-label">Linux VM</span>
+    <span class="dot" id="st-tutor" title="Ollama tutor"></span><span class="st-label">Tutor</span>
+  </div>
+  <button id="toggle-dock" class="btn ghost" title="Show or hide the terminal and tutor panel">Terminal &amp; Tutor</button>
+  <button id="theme" class="btn ghost" title="Light / dark" aria-label="Toggle theme">◐</button>
+</header>
+<div class="layout">
+  <nav class="sidebar" id="sidebar" aria-label="Course map"></nav>
+  <main id="main" tabindex="-1"></main>
+  <aside class="dock" id="dock">
+    <div class="dock-tabs" role="tablist">
+      <button class="tab active" data-tab="terminal" role="tab">Linux terminal</button>
+      <button class="tab" data-tab="tutor" role="tab">Tutor</button>
+    </div>
+    <section class="dock-pane" id="pane-terminal">
+      <div class="where where-linux"><strong>LINUX VM</strong> · you are <code>student@iamlab01</code>. Commands typed here run in Linux, not Windows.
+        <a href="#" id="term-pop" title="Open the terminal in its own browser tab">pop out ↗</a></div>
+      <iframe id="terminal" title="Linux terminal" src="about:blank"></iframe>
+      <div class="term-help">Copy: select text · Paste: <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>V</kbd> or right-click · Prefer your own terminal? In Windows Terminal type <code>ssh linux-iam-lab</code></div>
+    </section>
+    <section class="dock-pane" id="pane-tutor" hidden>
+      <div class="tutor-head">
+        <div class="tutor-modes" role="group" aria-label="Tutor mode">
+          <button class="chip active" data-mode="chat">Ask</button>
+          <button class="chip" data-mode="explain">Explain a command</button>
+          <button class="chip" data-mode="error">Explain an error</button>
+          <button class="chip" data-mode="nudge">Nudge me</button>
+          <button class="chip" data-mode="quiz">Quiz me</button>
+        </div>
+        <div class="tutor-note">The tutor reads the course and the exercise you have open. It <strong>cannot run commands</strong> and never needs passwords or keys.</div>
+      </div>
+      <div class="chat" id="chat" aria-live="polite"></div>
+      <details class="share">
+        <summary>Share terminal output with the tutor (optional)</summary>
+        <textarea id="shared" rows="5" placeholder="Paste only the output you want explained. Passwords, keys and hashes are removed before the tutor sees it."></textarea>
+      </details>
+      <form id="ask" class="ask">
+        <textarea id="question" rows="2" placeholder="Ask about a command, an error, or the exercise…"></textarea>
+        <button class="btn primary" type="submit" id="ask-btn">Send</button>
+      </form>
+    </section>
+  </aside>
+</div>
+<div id="toast" class="toast" hidden></div>
+<script src="md.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

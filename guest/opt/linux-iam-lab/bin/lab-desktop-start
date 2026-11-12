@@ -1,0 +1,23 @@
+#!/bin/bash
+# Runs in the learner's desktop session inside the lab VM.
+#   lab-desktop-start          open the course portal AND a Linux terminal (autostart)
+#   lab-desktop-start portal   open only the course portal
+TOKEN="$(cat /etc/linux-iam-lab/portal.token.student 2>/dev/null)"
+URL="http://127.0.0.1:8080/?token=${TOKEN}"
+# wait until the portal answers (services may still be starting right after boot)
+for _ in $(seq 1 60); do curl -fs http://127.0.0.1:8080/api/health >/dev/null 2>&1 && break; sleep 2; done
+if [ "${1:-}" != portal ]; then
+  xfce4-terminal --title="Linux IAM Lab - student@iamlab01" --geometry=110x30 \
+    -x bash -lc 'cat /etc/motd; exec bash -l' &
+fi
+BROWSER="$(command -v epiphany-browser || command -v epiphany || command -v xdg-open)"
+# Never restore the previous browser session (that produced extra, blank windows at login).
+gsettings set org.gnome.Epiphany restore-session-policy 'never' >/dev/null 2>&1 || true
+if [ "${1:-}" != portal ]; then
+  pkill -u "$(id -u)" -x epiphany 2>/dev/null || true
+  rm -f "$HOME/.local/share/epiphany/session_state.xml" "$HOME/.local/share/epiphany/session_state.xml~" 2>/dev/null
+fi
+case "$BROWSER" in
+  *epiphany*) exec "$BROWSER" "$URL" >/dev/null 2>&1 ;;   # --new-window would also open a blank start page
+  *) exec "$BROWSER" "$URL" >/dev/null 2>&1 ;;
+esac

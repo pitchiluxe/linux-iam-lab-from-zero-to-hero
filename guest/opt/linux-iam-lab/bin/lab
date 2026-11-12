@@ -1,0 +1,237 @@
+#!/usr/bin/python3
+"""lab - the Linux IAM Lab command-line helper (you are in the LINUX VM when you type this).
+
+  lab help                      this text
+  lab list                      modules and exercises with your progress
+  lab show <exercise>           the ticket and objective of an exercise
+  lab hint <exercise> [1|2|3]   progressively stronger hints
+  lab check <exercise>          run the automated check
+  lab reset <exercise>          put ONE exercise back to its starting state (retry)
+  lab rescue <what>             break-glass recovery: sudoers | sshd | faillock | sssd | terminal
+  lab capstone status|next|evidence
+  lab status [--brief]          lab services
+  lab where                     am I on Windows or Linux?
+  lab portal                    open the course portal in the Linux browser
+
+Root only (used by the Windows scripts): selftest, export-bundle <file>, import-progress <file>, tutor-pull
+"""
+import json
+import os
+import socket
+import subprocess
+import sys
+
+sys.path.insert(0, "/opt/linux-iam-lab/lib")
+import labcourse  # noqa: E402
+
+SOCK = "/run/linux-iam-lab/agent.sock"
+VAR = "/var/lib/linux-iam-lab"
+GREEN, RED, YEL, BLUE, BOLD, OFF = "\033[32m", "\033[31m", "\033[33m", "\033[34m", "\033[1m", "\033[0m"
+if not sys.stdout.isatty():
+    GREEN = RED = YEL = BLUE = BOLD = OFF = ""
+
+
+def agent(req, timeout=400):
+    s = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+    s.settimeout(timeout)
+    try:
+        s.connect(SOCK)
+    except OSError as exc:
+        sys.exit(f"{RED}Cannot reach the lab agent ({exc}). Try: sudo systemctl restart lab-agent{OFF}\n"
+                 "If you are not in group 'labagent' yet, open a new terminal tab.")
+    s.sendall((json.dumps(req) + "\n").encode())
+    data = b""
+    while not data.endswith(b"\n"):
+        chunk = s.recv(65536)
+        if not chunk:
+            break
+        data += chunk
+    return json.loads(data.decode() or "{}")
+
+
+def colour_lines(text):
+    for line in text.splitlines():
+        if line.startswith("PASS"):
+            print(f"{GREEN}{line}{OFF}")
+        elif line.startswith("FAIL"):
+            print(f"{RED}{line}{OFF}")
+        elif line.startswith(("HINT", "INFO")):
+            print(f"{YEL}{line}{OFF}")
+        elif line.startswith("RESULT"):
+            print(f"{BOLD}{line}{OFF}")
+        else:
+            print(line)
+
+
+def need_id(args):
+    if not args:
+        sys.exit("Which exercise? Run 'lab list' to see the ids.")
+    ex = args[0]
+    if not labcourse.ID_RE.match(ex):
+        sys.exit(f"'{ex}' is not an exercise id. Run 'lab list'.")
+    return ex
+
+
+def cmd_list(_):
+    prog = agent({"op": "progress"}).get("progress", {}).get("exercises", {})
+    for m in labcourse.load_course():
+        print(f"\n{BOLD}{m['id'].upper()}  {m['title']}{OFF}")
+        for e in m["exercises"]:
+            st = prog.get(e["id"], {}).get("status", "not_started")
+            mark = {"passed": f"{GREEN}[done]{OFF}", "in_progress": f"{YEL}[....]{OFF}"}.get(st, "[    ]")
+            print(f"  {mark} {e['id']:<28} {e['title']}")
+    print()
+
+
+def cmd_show(args):
+    e = labcourse.load_exercise(need_id(args))
+    print(f"{BOLD}{e['title']}{OFF}  ({e['id']}, about {e['minutes']} min)\n")
+    for s in e["sections"]:
+        if s["key"] in ("ticket", "objective", "your-task"):
+            print(f"{BLUE}## {s['title']}{OFF}\n{s['md']}\n")
+
+
+def cmd_hint(args):
+    ex = need_id(args)
+    e = labcourse.load_exercise(ex)
+    n = int(args[1]) if len(args) > 1 and args[1].isdigit() else 1
+    if not e["hints"]:
+        sys.exit("No hints for this exercise.")
+    n = max(1, min(n, len(e["hints"])))
+    agent({"op": "hint", "id": ex, "level": n})
+    print(f"{YEL}Hint {n} of {len(e['hints'])}{OFF}\n{e['hints'][n - 1]}\n")
+    if n < len(e["hints"]):
+        print(f"Stronger hint: lab hint {ex} {n + 1}")
+
+
+def cmd_check(args):
+    ex = need_id(args)
+    print(f"Checking {ex} (the lab tests real access as the affected users)...\n")
+    r = agent({"op": "check", "id": ex})
+    if not r.get("ok"):
+        sys.exit(f"{RED}{r.get('error')}{OFF}")
+    colour_lines(r["output"])
+    sys.exit(0 if r["passed"] else 1)
+
+
+def cmd_reset(args):
+    ex = need_id(args)
+    if "-y" not in args and sys.stdin.isatty():
+        a = input(f"Reset {ex} to its starting state? Objects this exercise uses are recreated; other work is kept. [y/N] ")
+        if a.lower() not in ("y", "yes"):
+            sys.exit("Cancelled.")
+    r = agent({"op": "reset", "id": ex})
+    print(r.get("output", "").strip())
+    print(f"{GREEN}Exercise {ex} is ready to retry.{OFF}" if r.get("ok") else f"{RED}Reset failed.{OFF}")
+    sys.exit(0 if r.get("ok") else 1)
+
+
+def cmd_rescue(args):
+    if not args:
+        sys.exit("lab rescue sudoers|sshd|faillock|sssd|terminal")
+    r = agent({"op": "rescue", "what": args[0]})
+    print(r.get("output") or r.get("error"))
+    sys.exit(0 if r.get("ok") else 1)
+
+
+def cmd_capstone(args):
+    action = args[0] if args else "status"
+    r = agent({"op": "capstone", "action": action})
+    colour_lines(r.get("output") or r.get("error", ""))
+    sys.exit(0 if r.get("ok") else 1)
+
+
+def cmd_status(args):
+    r = agent({"op": "status"})
+    brief = "--brief" in args
+    for k, v in r.get("services", {}).items():
+        ok = v == "active"
+        if brief and ok:
+            continue
+        print(f"  {k:<14} {GREEN if ok else RED}{v}{OFF}")
+    if brief:
+        bad = [k for k, v in r.get("services", {}).items() if v != "active"]
+        print("All lab services active." if not bad else "Not active: " + ", ".join(bad))
+
+
+def cmd_where(_):
+    print(f"{GREEN}You are in LINUX{OFF} (Ubuntu VM 'iamlab01') as user {os.environ.get('USER') or os.getuid()}.\n"
+          "Windows PowerShell looks like  PS C:\\Users\\you>  ; Linux looks like  student@iamlab01:~$")
+
+
+def cmd_portal(_):
+    if os.environ.get("DISPLAY"):
+        subprocess.Popen(["/opt/linux-iam-lab/bin/lab-desktop-start", "portal"],
+                         stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, start_new_session=True)
+        print("Opening the course portal in the Linux browser...")
+    else:
+        print("Open the portal from the VM desktop (Applications > Education > Course Portal),\n"
+              "or on Windows with the 'Start Linux IAM Lab' shortcut.")
+
+
+def require_root():
+    if os.geteuid() != 0:
+        sys.exit("This subcommand is for the lab's Windows scripts (root only).")
+
+
+def cmd_selftest(_):
+    require_root()
+    rc = subprocess.call(["/opt/linux-iam-lab/lib/selftest.sh"])
+    sys.exit(rc)
+
+
+def cmd_export(args):
+    require_root()
+    out = args[0] if args else "/tmp/lab-export.tar.gz"
+    tmp = "/tmp/lab-export-stage"
+    subprocess.call(["rm", "-rf", tmp])
+    os.makedirs(tmp + "/export")
+    subprocess.call(["cp", f"{VAR}/progress.json", tmp + "/export/progress.json"])
+    if os.path.exists(f"{VAR}/capstone.json"):
+        subprocess.call(["cp", f"{VAR}/capstone.json", tmp + "/export/capstone.json"])
+    subprocess.call(["tar", "-czf", tmp + "/export/student-home.tar.gz", "--exclude=.cache",
+                     "--exclude=.ssh/id_*", "-C", "/home", "student"])
+    with open(tmp + "/export/README.txt", "w") as fh:
+        fh.write("Linux IAM Lab export\nprogress.json: exercise checkmarks (import with: sudo lab import-progress progress.json)\n"
+                 "student-home.tar.gz: /home/student (private keys excluded)\n")
+    subprocess.check_call(["tar", "-czf", out, "-C", tmp, "export"])
+    os.chmod(out, 0o644)
+    subprocess.call(["rm", "-rf", tmp])
+    print(out)
+
+
+def cmd_import(args):
+    require_root()
+    with open(args[0], encoding="utf-8") as fh:
+        data = json.load(fh)
+    if not isinstance(data, dict) or "exercises" not in data:
+        sys.exit("Not a progress file.")
+    cur = json.load(open(f"{VAR}/progress.json"))
+    for k, v in data.get("exercises", {}).items():
+        if labcourse.ID_RE.match(k) and isinstance(v, dict):
+            cur["exercises"][k] = v
+    cur.setdefault("lessons", {}).update(data.get("lessons", {}))
+    with open(f"{VAR}/progress.json", "w") as fh:
+        json.dump(cur, fh, indent=1)
+    print(f"Imported {len(data.get('exercises', {}))} exercise records.")
+
+
+def cmd_tutor_pull(_):
+    require_root()
+    env = dict(line.strip().split("=", 1) for line in open("/etc/linux-iam-lab/settings.env") if "=" in line)
+    sys.exit(subprocess.call(["ollama", "pull", env.get("OLLAMA_MODEL", "qwen2.5:1.5b")]))
+
+
+CMDS = {"list": cmd_list, "show": cmd_show, "hint": cmd_hint, "check": cmd_check, "reset": cmd_reset,
+        "rescue": cmd_rescue, "capstone": cmd_capstone, "status": cmd_status, "where": cmd_where,
+        "portal": cmd_portal, "selftest": cmd_selftest, "export-bundle": cmd_export, "import-progress": cmd_import,
+        "tutor-pull": cmd_tutor_pull}
+
+if __name__ == "__main__":
+    if len(sys.argv) < 2 or sys.argv[1] in ("help", "-h", "--help"):
+        print(__doc__)
+        sys.exit(0)
+    fn = CMDS.get(sys.argv[1])
+    if not fn:
+        sys.exit(f"Unknown subcommand '{sys.argv[1]}'. Try: lab help")
+    fn(sys.argv[2:])

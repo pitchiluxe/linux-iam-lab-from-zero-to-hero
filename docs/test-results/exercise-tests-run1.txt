@@ -1,0 +1,166 @@
+ok   - m01-orientation reset/start scenario
+ok   - m01-orientation check FAILS on the untouched scenario (negative control)
+ok   - m01-orientation check PASSES after the walkthrough (7 assertions)
+ok   - m01-orientation retry (exercise reset) restores the starting state
+        (4s)
+ok   - m01-files reset/start scenario
+ok   - m01-files check FAILS on the untouched scenario (negative control)
+ok   - m01-files check PASSES after the walkthrough (7 assertions)
+ok   - m01-files retry (exercise reset) restores the starting state
+        (2s)
+ok   - m01-help-mistakes reset/start scenario
+ok   - m01-help-mistakes check FAILS on the untouched scenario (negative control)
+ok   - m01-help-mistakes check PASSES after the walkthrough (8 assertions)
+ok   - m01-help-mistakes retry (exercise reset) restores the starting state
+        (6s)
+ok   - m02-pipes-logs reset/start scenario
+ok   - m02-pipes-logs check FAILS on the untouched scenario (negative control)
+ok   - m02-pipes-logs check PASSES after the walkthrough (4 assertions)
+ok   - m02-pipes-logs retry (exercise reset) restores the starting state
+        (11s)
+ok   - m02-find-files reset/start scenario
+ok   - m02-find-files check FAILS on the untouched scenario (negative control)
+ok   - m02-find-files check PASSES after the walkthrough (3 assertions)
+ok   - m02-find-files retry (exercise reset) restores the starting state
+        (5s)
+ok   - m02-processes-services reset/start scenario
+ok   - m02-processes-services check FAILS on the untouched scenario (negative control)
+ok   - m02-processes-services check PASSES after the walkthrough (5 assertions)
+ok   - m02-processes-services retry (exercise reset) restores the starting state
+        (11s)
+ok   - m02-bash-script reset/start scenario
+ok   - m02-bash-script check FAILS on the untouched scenario (negative control)
+ok   - m02-bash-script check PASSES after the walkthrough (7 assertions)
+ok   - m02-bash-script retry (exercise reset) restores the starting state
+        (3s)
+ok   - m03-inspect-identities reset/start scenario
+ok   - m03-inspect-identities check FAILS on the untouched scenario (negative control)
+ok   - m03-inspect-identities check PASSES after the walkthrough (7 assertions)
+ok   - m03-inspect-identities retry (exercise reset) restores the starting state
+        (5s)
+ok   - m03-onboard reset/start scenario
+ok   - m03-onboard check FAILS on the untouched scenario (negative control)
+ok   - m03-onboard check PASSES after the walkthrough (13 assertions)
+ok   - m03-onboard retry (exercise reset) restores the starting state
+        (8s)
+ok   - m03-mover reset/start scenario
+ok   - m03-mover check FAILS on the untouched scenario (negative control)
+ok   - m03-mover check PASSES after the walkthrough (6 assertions)
+ok   - m03-mover retry (exercise reset) restores the starting state
+        (7s)
+ok   - m03-service-account reset/start scenario
+ok   - m03-service-account check FAILS on the untouched scenario (negative control)
+ok   - m03-service-account check PASSES after the walkthrough (11 assertions)
+FAIL - m03-service-account reset did not restore the scenario (reset 8, check 0)
+        (11s)
+ok   - m03-lockout reset/start scenario
+ok   - m03-lockout check FAILS on the untouched scenario (negative control)
+ok   - m03-lockout check PASSES after the walkthrough (8 assertions)
+ok   - m03-lockout retry (exercise reset) restores the starting state
+        (47s)
+ok   - m03-offboard reset/start scenario
+ok   - m03-offboard check FAILS on the untouched scenario (negative control)
+ok   - m03-offboard check PASSES after the walkthrough (12 assertions)
+ok   - m03-offboard retry (exercise reset) restores the starting state
+        (39s)
+ok   - m04-permissions reset/start scenario
+ok   - m04-permissions check FAILS on the untouched scenario (negative control)
+ok   - m04-permissions check PASSES after the walkthrough (7 assertions)
+ok   - m04-permissions retry (exercise reset) restores the starting state
+        (7s)
+ok   - m04-traversal reset/start scenario
+ok   - m04-traversal check FAILS on the untouched scenario (negative control)
+ok   - m04-traversal check PASSES after the walkthrough (4 assertions)
+ok   - m04-traversal retry (exercise reset) restores the starting state
+        (3s)
+ok   - m04-shared-dir reset/start scenario
+ok   - m04-shared-dir check FAILS on the untouched scenario (negative control)
+ok   - m04-shared-dir check PASSES after the walkthrough (8 assertions)
+ok   - m04-shared-dir retry (exercise reset) restores the starting state
+        (4s)
+ok   - m04-acl reset/start scenario
+ok   - m04-acl check FAILS on the untouched scenario (negative control)
+ok   - m04-acl check PASSES after the walkthrough (8 assertions)
+ok   - m04-acl retry (exercise reset) restores the starting state
+        (6s)
+ok   - m05-sudo-review reset/start scenario
+ok   - m05-sudo-review check FAILS on the untouched scenario (negative control)
+ok   - m05-sudo-review check PASSES after the walkthrough (5 assertions)
+ok   - m05-sudo-review retry (exercise reset) restores the starting state
+        (3s)
+ok   - m05-delegate reset/start scenario
+ok   - m05-delegate check FAILS on the untouched scenario (negative control)
+ok   - m05-delegate check PASSES after the walkthrough (14 assertions)
+ok   - m05-delegate retry (exercise reset) restores the starting state
+        (15s)
+ok   - m05-lockout-recovery reset/start scenario
+ok   - m05-lockout-recovery check FAILS on the untouched scenario (negative control)
+ok   - m05-lockout-recovery check PASSES after the walkthrough (9 assertions)
+ok   - m05-lockout-recovery retry (exercise reset) restores the starting state
+        (78s)
+ok   - m06-key-login reset/start scenario
+ok   - m06-key-login check FAILS on the untouched scenario (negative control)
+ok   - m06-key-login check PASSES after the walkthrough (9 assertions)
+ok   - m06-key-login retry (exercise reset) restores the starting state
+        (10s)
+ok   - m06-broken-ssh reset/start scenario
+ok   - m06-broken-ssh check FAILS on the untouched scenario (negative control)
+ok   - m06-broken-ssh check PASSES after the walkthrough (5 assertions)
+ok   - m06-broken-ssh retry (exercise reset) restores the starting state
+        (14s)
+ok   - m06-sshd-hardening reset/start scenario
+ok   - m06-sshd-hardening check FAILS on the untouched scenario (negative control)
+ok   - m06-sshd-hardening check PASSES after the walkthrough (12 assertions)
+ok   - m06-sshd-hardening retry (exercise reset) restores the starting state
+        (59s)
+ok   - m06-revoke-key reset/start scenario
+ok   - m06-revoke-key check FAILS on the untouched scenario (negative control)
+ok   - m06-revoke-key check PASSES after the walkthrough (8 assertions)
+ok   - m06-revoke-key retry (exercise reset) restores the starting state
+        (43s)
+ok   - m07-authn-authz reset/start scenario
+ok   - m07-authn-authz check FAILS on the untouched scenario (negative control)
+ok   - m07-authn-authz check PASSES after the walkthrough (7 assertions)
+ok   - m07-authn-authz retry (exercise reset) restores the starting state
+        (5s)
+ok   - m07-directory-lookup reset/start scenario
+ok   - m07-directory-lookup check FAILS on the untouched scenario (negative control)
+ok   - m07-directory-lookup check PASSES after the walkthrough (5 assertions)
+ok   - m07-directory-lookup retry (exercise reset) restores the starting state
+        (5s)
+ok   - m07-directory-access reset/start scenario
+ok   - m07-directory-access check FAILS on the untouched scenario (negative control)
+ok   - m07-directory-access check PASSES after the walkthrough (6 assertions)
+ok   - m07-directory-access retry (exercise reset) restores the starting state
+        (20s)
+ok   - m08-failed-logins reset/start scenario
+ok   - m08-failed-logins check FAILS on the untouched scenario (negative control)
+ok   - m08-failed-logins check PASSES after the walkthrough (4 assertions)
+ok   - m08-failed-logins retry (exercise reset) restores the starting state
+        (78s)
+ok   - m08-auditd reset/start scenario
+ok   - m08-auditd check FAILS on the untouched scenario (negative control)
+ok   - m08-auditd check PASSES after the walkthrough (10 assertions)
+ok   - m08-auditd retry (exercise reset) restores the starting state
+        (10s)
+ok   - m08-access-report reset/start scenario
+ok   - m08-access-report check FAILS on the untouched scenario (negative control)
+ok   - m08-access-report check PASSES after the walkthrough (10 assertions)
+ok   - m08-access-report retry (exercise reset) restores the starting state
+        (31s)
+ok   - m08-evidence reset/start scenario
+ok   - m08-evidence check FAILS on the untouched scenario (negative control)
+ok   - m08-evidence check PASSES after the walkthrough (13 assertions)
+ok   - m08-evidence retry (exercise reset) restores the starting state
+        (8s)
+ok   - m09-capstone reset
+ok   - m09-capstone stage1 check fails before work (exit 1)
+ok   - m09-capstone stage 1 passes and advances
+ok   - m09-capstone CAP-9002 injected fault 'shell' breaks the login (check fails)
+ok   - m09-capstone stage 2 passes and advances
+ok   - m09-capstone stage 3 passes and advances
+ok   - m09-capstone stage 4 (evidence) passes - capstone complete
+ok   - m09-capstone evidence report generated
+ok   - m09-capstone reset removes jlee and restarts at CAP-9001
+
+SUMMARY: 132 ok, 1 failed, 0 skipped

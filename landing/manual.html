@@ -1,0 +1,345 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Linux IAM Lab Manual</title>
+  <meta name="description" content="Step-by-step setup and user manual for the Linux IAM Lab: install the Ubuntu VM, start, stop and reset it, work the 9 modules and the capstone, use the tutor, and fix setup problems." />
+  <link rel="icon" href="img/favicon.svg" type="image/svg+xml" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Kalam:wght@300;400;700&family=Literata:ital,opsz,wght@0,7..72,400;0,7..72,600;1,7..72,400&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="manual.css" />
+</head>
+<body class="manual">
+  <a class="skip" href="#main">Skip to the manual</a>
+  <header class="wall wall--short">
+    <div class="board board--short">
+      <div class="board__surface board__surface--short">
+        <p class="board__date"><a class="chalk-link" href="index.html">Back to the classroom</a></p>
+        <h1 class="chalk chalk--title chalk--manual"><span class="write">The lab manual</span></h1>
+        <p class="chalk board__sub">From an empty PC to the capstone, one step at a time. Real screenshots and real output from a running lab.</p>
+        <svg class="board__diagram board__diagram--manual" viewBox="0 0 520 190" aria-hidden="true">
+          <defs>
+            <filter id="chalky-m" x="-5%" y="-5%" width="110%" height="110%">
+              <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" seed="7" />
+              <feDisplacementMap in="SourceGraphic" scale="2.2" />
+            </filter>
+            <marker id="tip-m" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+              <path d="M0 0 L10 5 L0 10" fill="none" stroke="#eef0ea" stroke-width="1.6" />
+            </marker>
+          </defs>
+          <g class="draw" filter="url(#chalky-m)" fill="none" stroke="#eef0ea" stroke-width="2" stroke-linecap="round">
+            <rect pathLength="1" x="8" y="46" width="108" height="50" rx="6" />
+            <rect pathLength="1" x="140" y="46" width="108" height="50" rx="6" />
+            <rect pathLength="1" x="272" y="46" width="108" height="50" rx="6" />
+            <rect pathLength="1" x="404" y="46" width="108" height="50" rx="6" />
+            <path pathLength="1" d="M118 71 L136 71" marker-end="url(#tip-m)" />
+            <path pathLength="1" d="M250 71 L268 71" marker-end="url(#tip-m)" />
+            <path pathLength="1" d="M382 71 L400 71" marker-end="url(#tip-m)" />
+            <path d="M458 100 C458 168, 194 168, 194 104" marker-end="url(#tip-m)" stroke-dasharray="6 6" class="flow" />
+          </g>
+          <g class="chalk-svg-text" filter="url(#chalky-m)">
+            <text x="62" y="78" text-anchor="middle">Install</text>
+            <text x="194" y="78" text-anchor="middle">Start</text>
+            <text x="326" y="78" text-anchor="middle">Ticket</text>
+            <text x="458" y="78" text-anchor="middle">Check</text>
+            <text x="62" y="32" text-anchor="middle" class="tiny">once</text>
+            <text x="194" y="32" text-anchor="middle" class="tiny">desktop icon</text>
+            <text x="326" y="32" text-anchor="middle" class="tiny">real commands</text>
+            <text x="458" y="32" text-anchor="middle" class="tiny">as the users</text>
+            <text x="326" y="182" text-anchor="middle" class="tiny">next ticket, every time round</text>
+          </g>
+          <g class="chalk-dots" aria-hidden="true">
+            <circle r="4.5" opacity="0"><animateMotion dur="2.6s" begin="3s" repeatCount="indefinite" path="M458 100 C458 168, 194 168, 194 104" /><animate attributeName="opacity" dur="2.6s" begin="3s" repeatCount="indefinite" values="0;1;1;0" keyTimes="0;0.1;0.9;1" /></circle>
+          </g>
+        </svg>
+      </div>
+    </div>
+  </header>
+  <div class="manual-layout">
+    <aside class="manual-side">
+    <nav class="toc" aria-label="Manual contents">
+      <p class="toc__title hand">Contents</p>
+      <ol>
+        <li><a href="#what-you-are-building">What you are building</a></li>
+        <li><a href="#part-a">Part A — Install the lab (once)</a></li>
+        <li><a href="#part-b">Part B — Daily use: Start, Stop, Reset</a></li>
+        <li><a href="#part-c">Part C — Find your way around</a></li>
+        <li><a href="#part-d">Part D — Work a ticket, start to finish</a></li>
+        <li><a href="#part-e">Part E — The course, Module 1 to 9</a></li>
+        <li><a href="#part-f">Part F — The AI tutor</a></li>
+        <li><a href="#part-g">Part G — Retry, reset and break-glass</a></li>
+        <li><a href="#part-h">Part H — Troubleshooting</a></li>
+        <li><a href="#part-i">Part I — Safety rules</a></li>
+      </ol>
+    </nav>
+
+    <div class="sketch-slot"><figure class="sketch sketch--blue">
+      <figcaption class="hand">Every account has a life</figcaption>
+      <svg viewBox="0 0 220 200" role="img" aria-label="The account lifecycle on Linux: useradd, usermod, lock and expire, then review, in a loop">
+        <defs><marker id="ah1" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0 L10 5 L0 10" fill="none" stroke="#1f4e8c" stroke-width="1.8"/></marker></defs>
+        <g class="ink" fill="none"><path d="M136 44 A62 62 0 0 1 166 74" marker-end="url(#ah1)"/><path d="M166 126 A62 62 0 0 1 136 156" marker-end="url(#ah1)"/><path d="M84 156 A62 62 0 0 1 54 126" marker-end="url(#ah1)"/><path d="M54 74 A62 62 0 0 1 84 44" marker-end="url(#ah1)"/></g>
+        <g class="box"><rect x="70" y="20" width="80" height="26" rx="5"/><rect x="142" y="87" width="76" height="26" rx="5"/><rect x="70" y="154" width="80" height="26" rx="5"/><rect x="2" y="87" width="76" height="26" rx="5"/></g>
+        <g text-anchor="middle"><text x="110" y="38">useradd</text><text x="180" y="105">usermod</text><text x="110" y="172">usermod -L</text><text x="40" y="105">review</text>
+        <text x="110" y="96" class="small">lock first,</text><text x="110" y="112" class="small">userdel after audit</text></g>
+      </svg>
+    </figure></div>
+
+    <div class="sketch-slot"><figure class="sketch sketch--yellow">
+      <figcaption class="hand">Reading mode bits</figcaption>
+      <svg viewBox="0 0 220 170" role="img" aria-label="The mode -rw-r----- split into owner rw, group r and others none, which is 640">
+        <g class="box"><rect x="8" y="20" width="22" height="34" rx="4"/><rect x="36" y="20" width="56" height="34" rx="4"/><rect x="98" y="20" width="56" height="34" rx="4"/><rect x="160" y="20" width="54" height="34" rx="4"/></g>
+        <g text-anchor="middle" font-family="Consolas, monospace"><text x="19" y="43">-</text><text x="64" y="43" class="strong">rw-</text><text x="126" y="43" class="strong">r--</text><text x="187" y="43" class="strong">---</text></g>
+        <g text-anchor="middle"><text x="19" y="76" class="small">file</text><text x="64" y="76" class="small">owner</text><text x="126" y="76" class="small">group</text><text x="187" y="76" class="small">others</text>
+        <text x="64" y="104" class="strong mark">6</text><text x="126" y="104" class="strong mark">4</text><text x="187" y="104" class="strong mark">0</text>
+        <text x="110" y="136" class="small">r = 4   w = 2   x = 1</text><text x="110" y="158">chmod 640 file</text></g>
+      </svg>
+    </figure></div>
+
+    <div class="sketch-slot"><figure class="sketch sketch--green">
+      <figcaption class="hand">How Linux decides</figcaption>
+      <svg viewBox="0 0 220 196" role="img" aria-label="Access check order: are you the owner, are you in the group, otherwise others; ACL entries can add named users or groups">
+        <defs><marker id="ah3" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0 L10 5 L0 10" fill="none" stroke="#1f4e8c" stroke-width="1.8"/></marker></defs>
+        <g class="box"><rect x="10" y="6" width="200" height="34" rx="5"/><rect x="10" y="56" width="200" height="34" rx="5"/><rect x="10" y="106" width="200" height="34" rx="5"/><rect x="10" y="156" width="200" height="34" rx="5"/></g>
+        <g class="ink"><path d="M110 41 V53" marker-end="url(#ah3)"/><path d="M110 91 V103" marker-end="url(#ah3)"/><path d="M110 141 V153" marker-end="url(#ah3)"/></g>
+        <g><text x="20" y="28" class="strong">Owner?</text><text x="200" y="28" text-anchor="end" class="small">use owner bits</text>
+        <text x="20" y="78" class="strong">Named in ACL?</text><text x="200" y="78" text-anchor="end" class="small">getfacl</text>
+        <text x="20" y="128" class="strong">In the group?</text><text x="200" y="128" text-anchor="end" class="small">id user</text>
+        <text x="20" y="178" class="strong">Everyone else</text><text x="200" y="178" text-anchor="end" class="small">others bits</text></g>
+      </svg>
+    </figure></div>
+
+    <div class="sketch-slot"><figure class="sketch sketch--pink">
+      <figcaption class="hand">SSH keys: lock and key</figcaption>
+      <svg viewBox="0 0 220 176" role="img" aria-label="Your private key stays on your PC; the public key goes into authorized_keys on the server; the server checks a signature">
+        <defs><marker id="ah4" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0 L10 5 L0 10" fill="none" stroke="#1f4e8c" stroke-width="1.8"/></marker></defs>
+        <g class="box"><rect x="6" y="30" width="88" height="56" rx="6"/><rect x="126" y="30" width="88" height="56" rx="6"/></g>
+        <g class="ink" fill="none"><path d="M96 50 H122" marker-end="url(#ah4)"/><path d="M124 70 H98" marker-end="url(#ah4)"/></g>
+        <g text-anchor="middle"><text x="50" y="22" class="small">your PC</text><text x="170" y="22" class="small">Linux server</text>
+        <text x="50" y="54" class="strong">id_ed25519</text><text x="50" y="72" class="small">private: never</text><text x="50" y="84" class="small">leaves</text>
+        <text x="170" y="54" class="strong">.pub</text><text x="170" y="72" class="small">in authorized</text><text x="170" y="84" class="small">_keys</text>
+        <text x="110" y="118">signature checked</text><text x="110" y="140" class="small">revoke: remove the line,</text><text x="110" y="156" class="small">or list it in RevokedKeys</text></g>
+      </svg>
+    </figure></div>
+
+    <div class="sketch-slot"><figure class="sketch sketch--white">
+      <figcaption class="hand">sudo: least privilege</figcaption>
+      <svg viewBox="0 0 220 196" role="img" aria-label="Least privilege pyramid: root at the top, one delegated command in the middle, normal users at the base">
+        <path class="box" d="M110 8 L208 170 L12 170 Z"/>
+        <g class="ink" fill="none"><path d="M78 61 H142"/><path d="M46 116 H174"/></g>
+        <g text-anchor="middle"><text x="110" y="50" class="strong">root</text><text x="110" y="96">one command</text><text x="110" y="150">normal users</text>
+        <text x="110" y="190" class="small">grant the command, not the shell</text></g>
+      </svg>
+    </figure></div>
+
+    <div class="sketch-slot"><figure class="sketch sketch--yellow">
+      <figcaption class="hand">Right password, still denied?</figcaption>
+      <ul class="sketch__list">
+        <li>Authentication: who are you? (PAM)</li>
+        <li>Authorization: may you? (groups, AllowGroups, expiry)</li>
+        <li>Audit: what happened? (journalctl, auditd)</li>
+      </ul>
+      <p class="sketch__foot">Read the log before you change anything.</p>
+    </figure></div>
+    </aside>
+    <main id="main" class="book manual-book">
+      <section class="page manual-part">
+<p>From an empty Windows PC to a working Linux Identity &amp; Access Management lab: your own <strong>Ubuntu Server 24.04 LTS virtual machine</strong> in VirtualBox, a fictional company with real Linux accounts, groups, files, sudo rules, SSH keys and a small LDAP directory, 32 checked tickets, a 4-stage capstone, and a local AI tutor.</p>
+<aside class="teacher-note"><p><strong>About the pictures.</strong> Every screenshot in this manual was taken from a real, running lab VM. Command output in the grey boxes is real output from the same lab. Every person, company and file in the lab is fictional.</p></aside>
+</section><section class="page manual-part" aria-labelledby="what-you-are-building"><h2 id="what-you-are-building" class="hand">What you are building</h2>
+<pre class="printout"><code> Your PC (Windows 10/11)
+ ├── Desktop icons: "Start / Stop / Reset Linux IAM Lab"
+ └── VirtualBox VM: LinuxIAM-Lab01  (Ubuntu Server 24.04 LTS, private NAT)
+     ├── XFCE desktop, signed in as student@iamlab01
+     ├── Lab Terminal: where you type the exercise commands
+     ├── Course portal: lessons, tickets, Check my work, hints, reference
+     ├── Fictional company "Northwind Labs": people, groups, /srv shares
+     ├── OpenLDAP + SSSD: the lab's own directory, inside the VM
+     ├── auditd, sshd, sudo, PAM: the real things, not simulations
+     └── Ollama + qwen2.5:1.5b: the AI tutor (local, no GPU needed)</code></pre>
+<p>Nothing in this lab is simulated: every exercise is checked by testing access <strong>as the affected users</strong>. Can they read the file? Log in with the key? Run the delegated command? And are they denied everything else?</p>
+<figure class="photo manual-photo"><img src="img/01-linux-desktop.png" alt="The lab VM window: the Linux desktop with the Lab Terminal and the course portal open" loading="lazy" /><figcaption>What you work in: the Linux VM window, with the Lab Terminal and the course portal</figcaption></figure>
+</section><section class="page manual-part" aria-labelledby="part-a"><h2 id="part-a" class="hand">Part A — Install the lab (once)</h2>
+<h3 id="a1">A1. Check your PC</h3>
+<div class="table-wrap"><table><thead><tr><th>Need</th><th>Minimum</th></tr></thead><tbody>
+<tr><td>Windows</td><td>Windows 10 (1809 or newer) or Windows 11, 64-bit. Home is fine.</td></tr>
+<tr><td>Hypervisor</td><td>Oracle VirtualBox 7.x</td></tr>
+<tr><td>Rights</td><td>A standard user. No administrator rights needed.</td></tr>
+<tr><td>Memory</td><td>5 GB free while installing and running (the VM uses 4 GB; <code>-MemoryMB 3072</code> lowers it)</td></tr>
+<tr><td>Disk</td><td>25 GB free (about 9 GB is used after the install)</td></tr>
+<tr><td>Internet</td><td>First install only, about 3.5 GB of downloads</td></tr>
+</tbody></table></div>
+<aside class="teacher-note"><p><strong>The installer never stops your other VMs.</strong> If there is not enough free memory it stops and tells you, before it changes anything. Close some applications and run it again.</p></aside>
+<h3 id="a2">A2. Install VirtualBox</h3>
+<ol>
+<li>Download <strong>VirtualBox 7</strong> for Windows hosts from <a href="https://www.virtualbox.org/wiki/Downloads" rel="noopener">virtualbox.org</a>.</li>
+<li>Run the installer with the default options.</li>
+</ol>
+<h3 id="a3">A3. Get the project</h3>
+<p>Copy the project folder to your PC, for example <code>Documents\Linux_IAM_Lab</code>. The code is private for now: <a href="#" data-ask-access>email the author to ask for access</a>.</p>
+<h3 id="a4">A4. Run the installer (one command)</h3>
+<p>Open <strong>Windows PowerShell</strong> (not as administrator), go to the project folder and run:</p>
+<pre class="printout"><code>powershell -NoProfile -ExecutionPolicy Bypass -File .\Install-LinuxIAMLab.ps1</code></pre>
+<p>What happens, step by step (all of it is logged to <code>%LOCALAPPDATA%\LinuxIAMLab\logs</code>, without passwords or keys):</p>
+<ol>
+<li><strong>Preflight</strong>: checks Windows, VirtualBox, OpenSSH, memory, disk and free ports. Changes nothing.</li>
+<li><strong>Keys</strong>: creates your learner SSH key and pins the VM's host key.</li>
+<li><strong>Image</strong>: downloads the Ubuntu 24.04 cloud image and verifies Ubuntu's signature and checksum.</li>
+<li><strong>VM</strong>: creates <code>LinuxIAM-Lab01</code> with its own disk and private NAT. Ports listen on <code>127.0.0.1</code> only.</li>
+<li><strong>Provisioning</strong>: installs the desktop, the fictional company, the directory, the portal, every exercise and the tutor.</li>
+<li><strong>Your Linux password</strong>: you choose the password for the Linux account <code>student</code> (you type it for <code>sudo</code>). It is set inside the VM only.</li>
+<li><strong>Self-test</strong>, then a <strong>baseline snapshot</strong> that Reset uses later.</li>
+<li><strong>Shortcuts</strong> on your desktop.</li>
+</ol>
+<p>A fresh install takes about 45–60 minutes. <strong>It can be re-run safely</strong>: if your internet drops or the PC sleeps, run the same command again and finished steps are skipped.</p>
+</section><section class="page manual-part" aria-labelledby="part-b"><h2 id="part-b" class="hand">Part B — Daily use: Start, Stop, Reset</h2>
+<div class="table-wrap"><table><thead><tr><th>Desktop icon</th><th>What it does</th></tr></thead><tbody>
+<tr><td><strong>Start Linux IAM Lab</strong></td><td>Checks the VM really is this lab's VM, then opens it in a <strong>VirtualBox window</strong>. Linux signs in as <code>student</code> and opens the Lab Terminal and the course portal.</td></tr>
+<tr><td><strong>Stop Linux IAM Lab</strong></td><td>Shuts down the lab VM cleanly. Only the lab VM.</td></tr>
+<tr><td><strong>Reset Linux IAM Lab</strong></td><td>Exports your work, asks you to type <code>RESET</code>, restores the clean baseline, then restores your checkmarks.</td></tr>
+</tbody></table></div>
+<h3 id="b1">Start</h3>
+<p>Double-click <strong>Start Linux IAM Lab</strong>. The start log looks like this (real output, trimmed):</p>
+<pre class="printout"><code>[OK]   Target verified: LinuxIAM-Lab01 {078bd032-...}
+[STEP] Starting the lab VM (state was 'poweroff')
+[OK]   The Linux IAM Lab window is opening: it logs in as student and opens
+       the course portal and a Linux terminal inside Linux
+[STEP] Waiting for Linux and the lab services
+[OK]   Linux is up (SSH host key matches the pinned key)
+[INFO] All lab services active.
+[OK]   Course portal is ready</code></pre>
+<p>From power-off this takes about 2–3 minutes. Clicking it while the lab is running is safe: it only checks.</p>
+<h3 id="b2">Stop</h3>
+<p>Double-click <strong>Stop Linux IAM Lab</strong> when you are done. It asks Linux to shut down properly (about 30 seconds).</p>
+<aside class="teacher-note"><p><strong>Why not just close the window?</strong> A hard power-off can leave the directory and the audit log half-written. Use <strong>Stop</strong>; your progress is saved inside the VM.</p></aside>
+</section><section class="page manual-part" aria-labelledby="part-c"><h2 id="part-c" class="hand">Part C — Find your way around</h2>
+<h3 id="c1">Where am I typing?</h3>
+<p>The single most common beginner mistake is typing a Linux command into Windows. The lab makes the difference impossible to miss:</p>
+<div class="table-wrap"><table><thead><tr><th>Window</th><th>Prompt</th><th>Use it for</th></tr></thead><tbody>
+<tr><td><strong>Lab Terminal</strong> (inside the Linux VM)</td><td><code>student@iamlab01:~$</code> in green</td><td>Almost every command in this course</td></tr>
+<tr><td><strong>Windows PowerShell</strong> (your PC)</td><td><code>PS C:\Users\you&gt;</code></td><td>Only the Start / Stop / Reset scripts, and <code>ssh linux-iam-lab</code></td></tr>
+</tbody></table></div>
+<figure class="photo manual-photo"><img src="img/manual/04-start-here.png" alt="The portal's Start here page with the Where am I typing panel, the module list and the Linux terminal and tutor on the right" loading="lazy" /><figcaption>Start here: the module list on the left, the lesson in the middle, the Linux terminal and the tutor on the right</figcaption></figure>
+<h3 id="c2">The portal</h3>
+<ul>
+<li><strong>Left</strong>: Start here, the nine modules with your score for each, the Reference library and Progress &amp; lab tools.</li>
+<li><strong>Top</strong>: search (press <kbd>/</kbd>), your overall progress, and green lights for the Linux VM and the tutor.</li>
+<li><strong>Right</strong>: <strong>Terminal &amp; Tutor</strong> — a second Linux terminal and the AI tutor, side by side with the lesson.</li>
+</ul>
+<figure class="photo manual-photo"><img src="img/02-course-map.png" alt="Course map: nine modules with their exercises and progress" loading="lazy" /><figcaption>The course map: nine modules, 32 tickets and the capstone</figcaption></figure>
+<h3 id="c3">The lab command</h3>
+<p>Everything in the portal is also available in the Lab Terminal (real output):</p>
+<pre class="printout"><code>student@iamlab01:~$ lab help
+  lab list                      modules and exercises with your progress
+  lab show &lt;exercise&gt;           the ticket and objective of an exercise
+  lab hint &lt;exercise&gt; [1|2|3]   progressively stronger hints
+  lab check &lt;exercise&gt;          run the automated check
+  lab reset &lt;exercise&gt;          put ONE exercise back to its starting state (retry)
+  lab rescue &lt;what&gt;             break-glass recovery: sudoers | sshd | faillock | sssd | terminal
+  lab where                     am I on Windows or Linux?
+  lab portal                    open the course portal in the Linux browser</code></pre>
+<h3 id="c4">The reference library</h3>
+<p>A glossary (A to Z), a command dictionary, shortcuts and an IAM troubleshooting guide. A copy is also saved on Windows in <code>Documents\LinuxIAMLab\Reference</code>, so you can read it with the VM off.</p>
+<figure class="photo manual-photo"><img src="img/manual/08-reference.png" alt="Reference library with the glossary, command dictionary, shortcuts and troubleshooting guide" loading="lazy" /><figcaption>Reference library: glossary, command dictionary, shortcuts, troubleshooting</figcaption></figure>
+</section><section class="page manual-part" aria-labelledby="part-d"><h2 id="part-d" class="hand">Part D — Work a ticket, start to finish</h2>
+<p>Every exercise follows the same loop: <strong>ticket → concepts and commands → your task → Check my work → hints if stuck → walkthrough</strong>. Here is one real ticket, <em>“The payroll file is readable by everyone”</em> (Module 4).</p>
+<h3 id="d1">1. Read the ticket</h3>
+<p>The ticket says who is asking, what is wrong and what “done” means, in the words a real requester would use.</p>
+<figure class="photo manual-photo"><img src="img/manual/05-exercise-ticket.png" alt="An exercise page showing the ticket, objective and prerequisites" loading="lazy" /><figcaption>The ticket, the objective and what you need before you start</figcaption></figure>
+<h3 id="d2">2. Learn the commands</h3>
+<p>Each command block shows the flags explained and example output. <strong>Explain</strong> sends that command to the tutor; <strong>Copy</strong> copies it for the terminal.</p>
+<figure class="photo manual-photo"><img src="img/manual/06-commands-explained.png" alt="Concepts and commands section with Explain and Copy buttons on each command" loading="lazy" /><figcaption>Concepts and commands, each with Explain and Copy</figcaption></figure>
+<h3 id="d3">3. Do the task, then Check my work</h3>
+<p>Type the commands in the Lab Terminal. When you think you are done, click <strong>Check my work</strong> (or type <code>lab check m04-permissions</code>).</p>
+<figure class="photo manual-photo"><img src="img/manual/07-task-and-check.png" alt="Your task, Verify and If it fails sections, with the Check my work button" loading="lazy" /><figcaption>Your task, how to verify it yourself, and what to do if it fails</figcaption></figure>
+<p>The check logs in <strong>as each affected person</strong> and tries the access for real (real output):</p>
+<pre class="printout"><code>student@iamlab01:~$ lab check m04-permissions
+Checking m04-permissions (the lab tests real access as the affected users)...
+
+PASS: owner aokafor, group finance
+PASS: mode 640 (rw-r-----)
+PASS: ALLOWED as aokafor: read
+PASS: ALLOWED as aokafor: write
+PASS: ALLOWED as jkim (finance): read
+PASS: DENIED as jkim: write
+PASS: DENIED as btran (not finance): read
+RESULT: all checks passed</code></pre>
+<figure class="photo manual-photo"><img src="img/03-check-my-work.png" alt="Check my work result in the portal with every check passed" loading="lazy" /><figcaption>The same result in the portal; the module score and the progress bar update</figcaption></figure>
+<h3 id="d4">4. Stuck? Hints, then the walkthrough</h3>
+<p>Three hints, each telling you a little more. The full walkthrough is always there to review after you pass, or when you really need it.</p>
+<figure class="photo manual-photo"><img src="img/manual/11-hints-walkthrough.png" alt="Two hints opened, a button for the third, and the collapsed walkthrough" loading="lazy" /><figcaption>Hints open one at a time; the walkthrough stays folded until you want it</figcaption></figure>
+<aside class="teacher-note"><p><strong>Tip:</strong> say what you expect before you run the check. “jkim can read, cannot write, btran cannot read.” If the check surprises you, that is the lesson.</p></aside>
+</section><section class="page manual-part" aria-labelledby="part-e"><h2 id="part-e" class="hand">Part E — The course, Module 1 to 9</h2>
+<div class="table-wrap"><table><thead><tr><th>Module</th><th>Tickets</th><th>You keep</th></tr></thead><tbody>
+<tr><td><strong>1</strong> First day at the Linux terminal</td><td>orientation, files, help &amp; awkward file names</td><td>Confidence at the prompt</td></tr>
+<tr><td><strong>2</strong> Read and investigate a system</td><td>pipes &amp; logs, find, processes &amp; services, a Bash script</td><td>A script that lists accounts that can log in</td></tr>
+<tr><td><strong>3</strong> Manage the identity lifecycle</td><td>inspect identities, onboard, mover, service account, lockout, offboard</td><td>Joiner, mover and leaver done properly</td></tr>
+<tr><td><strong>4</strong> Control access to files and directories</td><td>permissions, directory traversal, shared folder (setgid), ACLs</td><td>Access tested as two users, one allowed, one denied</td></tr>
+<tr><td><strong>5</strong> Delegate administrative privileges</td><td>sudo review, command delegation, lockout recovery</td><td>One command delegated, nothing more</td></tr>
+<tr><td><strong>6</strong> Secure remote access (SSH)</td><td>key login, broken SSH, sshd hardening, key revocation</td><td>A hardened sshd and a revoked key that stays revoked</td></tr>
+<tr><td><strong>7</strong> Authentication and centralized identity</td><td>authN vs authZ (PAM/NSS), directory lookup, directory-based access</td><td>LDAP users signing in through SSSD</td></tr>
+<tr><td><strong>8</strong> Audit and automate IAM work</td><td>failed logins, auditd, access-report script, evidence package</td><td>An access-review evidence package</td></tr>
+<tr><td><strong>9</strong> Capstone</td><td>onboard a contractor → fix a broken login (different for every learner) → revoke everything → evidence</td><td>A portfolio project</td></tr>
+</tbody></table></div>
+<h3 id="e1">The people you will manage</h3>
+<p>All fictional, all at <em>Northwind Labs</em>: Amara Okafor and Jae Kim (Finance), Ben Tran and Eli Novak (Engineering), Chloe Diaz and Hana Lopez (HR), Dev Patel (Helpdesk), Riley Morgan (Audit), and Kai Wright, a contractor whose contract has ended. Service accounts such as <code>svc-falcon</code> run the demo web app.</p>
+<h3 id="e2">Track your progress</h3>
+<p><strong>Progress &amp; lab tools</strong> shows every exercise with a tick when it passes.</p>
+<figure class="photo manual-photo"><img src="img/manual/09-progress-tools.png" alt="Progress page listing every module and exercise with ticks for those passed" loading="lazy" /><figcaption>Your progress, module by module</figcaption></figure>
+</section><section class="page manual-part" aria-labelledby="part-f"><h2 id="part-f" class="hand">Part F — The AI tutor</h2>
+<ul>
+<li>Runs <strong>inside the VM</strong> on Ollama (<code>qwen2.5:1.5b</code>), listening on <code>127.0.0.1</code> only. Your questions never leave the VM.</li>
+<li>Modes: <strong>Ask</strong>, <strong>Explain a command</strong>, <strong>Explain an error</strong>, <strong>Nudge me</strong> and <strong>Quiz me</strong>.</li>
+<li>It reads the course and the exercise you have open. It only sees terminal output that <strong>you paste</strong> into “Share terminal output”.</li>
+<li>It <strong>cannot run commands</strong> and never needs passwords or keys. Private keys, password hashes and <code>password=</code> / <code>token=</code> values are removed before it sees anything, and you are told how many were removed.</li>
+<li>On a PC where Windows' own hypervisor is on, answers take 1–4 minutes and appear word by word. Lessons, hints, walkthroughs and checks never wait for it.</li>
+</ul>
+<aside class="teacher-note"><p><strong>Check what the tutor tells you.</strong> A small local model can be wrong. Treat it like a classmate: useful for a nudge, but the <strong>Check my work</strong> button and the man pages are the authority.</p></aside>
+</section><section class="page manual-part" aria-labelledby="part-g"><h2 id="part-g" class="hand">Part G — Retry, reset and break-glass</h2>
+<div class="table-wrap"><table><thead><tr><th></th><th>Scope</th><th>Your progress</th><th>Your files in the VM</th></tr></thead><tbody>
+<tr><td><strong>Retry exercise</strong> (button, or <code>lab reset ID</code>)</td><td>Only that exercise's users, files and settings</td><td>Kept</td><td>Kept</td></tr>
+<tr><td><strong>Reset Linux IAM Lab</strong> (desktop)</td><td>The whole VM back to the install baseline</td><td>Exported, then restored</td><td>Exported to <code>Documents\LinuxIAMLab\Exports</code>, then cleared</td></tr>
+</tbody></table></div>
+<h3 id="g1">Break-glass recovery</h3>
+<p>Module 5 and 6 let you break sudo and SSH on purpose. If you lock yourself out, <strong>Progress &amp; lab tools</strong> has fixed, logged recovery buttons — the lab's version of walking to the server console.</p>
+<figure class="photo manual-photo"><img src="img/manual/10-break-glass.png" alt="Break-glass recovery buttons: fix sudo policy, fix SSH server config, unlock student, repair directory, restart web terminal" loading="lazy" /><figcaption>Break-glass: sudo, SSH, faillock, directory and terminal repairs</figcaption></figure>
+<pre class="printout"><code>lab rescue sudoers     # a broken file in /etc/sudoers.d
+lab rescue sshd        # sshd will not start after your edit
+lab rescue faillock    # student is locked after failed passwords
+lab rescue sssd        # directory logins stopped working</code></pre>
+<p>Reset was tested by breaking the lab on purpose (an invalid sudo policy, a folder set to <code>000</code>, the directory services stopped): after Reset, <code>visudo -c</code> was clean, the folder was back to <code>2770 root:finance</code>, the services were running, and the learner's file was in the export.</p>
+</section><section class="page manual-part" aria-labelledby="part-h"><h2 id="part-h" class="hand">Part H — Troubleshooting</h2>
+<div class="table-wrap"><table><thead><tr><th>Symptom</th><th>Cause</th><th>Fix</th></tr></thead><tbody>
+<tr><td>Preflight: not enough memory</td><td>Other apps are using it</td><td>Close applications and re-run, or add <code>-MemoryMB 3072</code>. The installer never stops other VMs.</td></tr>
+<tr><td>Download interrupted</td><td>Network dropped</td><td>Re-run; the download resumes and is verified again</td></tr>
+<tr><td>“Provisioning inside the VM did not finish”</td><td>Interrupted setup</td><td>Re-run the installer; it resumes where it stopped</td></tr>
+<tr><td>VM slow, tutor slow</td><td>Windows' hypervisor is on (WSL2, Docker, Memory integrity); the VM gets 1 CPU</td><td>Supported, just slower. Closing heavy apps (such as another Ollama on Windows) helps</td></tr>
+<tr><td>Boot shows “Kernel panic … IO-APIC + timer”</td><td>Known VirtualBox-on-Hyper-V timer issue</td><td>Nothing to do: Start power-cycles the lab VM automatically (up to 3 times)</td></tr>
+<tr><td>“unexpected SSH host key”</td><td>The VM was replaced outside the installer</td><td>The scripts refuse to talk to it. Uninstall, then install again</td></tr>
+<tr><td>The portal page is blank</td><td>An old copy is cached in the browser</td><td>Press <kbd>Ctrl</kbd>+<kbd>F5</kbd>, or type <code>lab portal</code></td></tr>
+<tr><td>A Linux command “is not recognized”</td><td>You typed it in Windows PowerShell</td><td>Use the Lab Terminal (<code>student@iamlab01:~$</code>), or type <code>lab where</code></td></tr>
+<tr><td><code>sudo</code> rejects your password</td><td>Typo, or faillock after several tries</td><td>Wait, retry carefully, or use <strong>Unlock student (faillock)</strong></td></tr>
+</tbody></table></div>
+<p>Logs for every Start, Stop, Reset and install are in <code>%LOCALAPPDATA%\LinuxIAMLab\logs</code>. They never contain passwords or keys, so you can share them when you ask for help.</p>
+</section><section class="page manual-part" aria-labelledby="part-i"><h2 id="part-i" class="hand">Part I — Safety rules</h2>
+<ul>
+<li>The lab scripts manage <strong>only</strong> the VM whose name, ID and install tag they recorded. They refuse to touch any other VM.</li>
+<li>No administrator rights, no reboot of your PC, no change to Windows features or networking. Ports listen on <code>127.0.0.1</code> only.</li>
+<li>The directory module uses an OpenLDAP server <strong>inside</strong> the Linux VM. Nothing connects to any other lab or company directory.</li>
+<li>Your Linux password is set inside the VM only and never stored on Windows. Exports leave out private keys.</li>
+<li>The tutor cannot run commands and never receives secrets.</li>
+<li>Every person, company, address and file in the lab is fictional.</li>
+</ul>
+</section>
+    </main>
+  </div>
+  <footer class="rules">
+    <h2 class="hand">Lab rules</h2>
+    <p>Say what you expect before you run the check. Grant the least access that does the job. Lock first, delete after the audit. Keep secrets out of screenshots and out of Git. Everyone in the lab is fictional.</p>
+    <p class="small">Linux IAM Lab From Zero To Hero, by Erick Omari. <a href="#" data-ask-access>Ask for access</a> · <a href="index.html#contact-title">Contact the author</a>.</p>
+  </footer>
+  <script src="app.js" defer></script>
+</body>
+</html>

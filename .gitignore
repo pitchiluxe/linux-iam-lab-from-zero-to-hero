@@ -1,0 +1,17 @@
+# Secrets and local tool state - never commit
+.env*
+**/.vercel/
+.playwright-mcp/
+.claude/settings.local.json
+*.pem
+*.key
+id_*
+!**/id_*.md
+
+# Build / download caches
+*.part
+*.iso
+*.vmdk
+*.vdi
+__pycache__/
+*.pyc

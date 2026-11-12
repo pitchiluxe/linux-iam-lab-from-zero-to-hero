@@ -1,0 +1,42 @@
+ok   - health endpoint answers without auth
+ok   - API refuses requests without the session cookie (401)
+ok   - wrong token is rejected (403)
+ok   - foreign Host header is rejected (DNS-rebinding guard)
+ok   - correct token sets an HttpOnly SameSite=Strict cookie
+ok   - course API returns 9 modules / 32 exercises
+ok   - reference API returns 4 documents
+ok   - POST without the X-Lab header is refused (CSRF guard)
+ok   - check via portal -> agent works and returns PASS/FAIL lines
+ok   - unknown exercise id is rejected by the agent
+ok   - path traversal in exercise id is rejected
+ok   - progress records the check attempt
+ok   - static portal page is served after login
+ok   - portal shows the locked page without a session
+ok   - agent socket is root:labagent 0660
+ok   - student can use the agent (lab status)
+ok   - other users cannot use the agent
+ok   - lab check works as student through the agent
+ok   - web terminal served at the secret path
+ok   - web terminal NOT served without the secret path
+ok   - web terminal runs as student
+ok   - terminal URL handed out by the portal matches
+ok   - Ollama listens on 127.0.0.1:11434 only
+ok   - Ollama service override binds loopback
+ok   - tutor answered an explain request (477.6s, 1942 chars)
+ok   - tutor explanation mentions -a/append
+ok   - secrets in shared terminal output were redacted before reaching the model (3 items)
+ok   - no secret echoed back by the tutor
+ok   - tutor offline: friendly message, no crash
+ok   - with Ollama stopped, exercise checks still work
+ok   - with Ollama stopped, course content still loads
+ok   - simulated broken sudo policy (visudo -c fails)
+ok   - lab rescue sudoers (as student, via agent) repairs sudo policy
+ok   - simulated broken sshd config
+ok   - lab rescue sshd quarantines the bad file and sshd -t passes
+ok   - lab rescue sssd restores directory lookups
+ok   - simulated student lockout (faillock)
+ok   - lab rescue faillock unlocks student
+ok   - exercise reset repairs learner-broken permissions (m04-traversal)
+ok   - selftest passes after all the breakage and recovery
+
+SUMMARY: 40 ok, 0 failed

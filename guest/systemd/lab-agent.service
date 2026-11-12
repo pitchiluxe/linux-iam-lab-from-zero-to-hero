@@ -1,0 +1,13 @@
+[Unit]
+Description=Linux IAM Lab agent (runs exercise checks and resets as root)
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/python3 /opt/linux-iam-lab/bin/lab-agent.py
+Restart=always
+RestartSec=2
+UMask=0027
+
+[Install]
+WantedBy=multi-user.target

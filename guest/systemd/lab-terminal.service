@@ -1,0 +1,19 @@
+[Unit]
+Description=Linux IAM Lab web terminal (ttyd, logged in as student)
+After=network.target
+
+[Service]
+Type=simple
+User=student
+Group=student
+WorkingDirectory=/home/student
+Environment=TERM=xterm-256color
+Environment=HOME=/home/student
+Environment=USER=student
+Environment=SHELL=/bin/bash
+ExecStart=/bin/sh -c 'exec /usr/bin/ttyd --writable --check-origin --port 7681 --base-path "/t/$$(cat /etc/linux-iam-lab/terminal.token.student)" --client-option titleFixed="Linux VM - student@iamlab01" --client-option fontSize=15 /bin/bash -l'
+Restart=always
+RestartSec=2
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,26 @@
+```text
+sudo usermod -aG webops btran
+```
+
+**Explanation:**
+- **`sudo`**: This command requires elevated privileges, allowing the user to perform actions that require root access.
+- **`usermod`**: This command is used to modify user information. It can change various aspects of a user's account, including group memberships.
+- **`-a`**: This flag appends the specified group to the user's supplementary groups list. It is necessary when adding a user to multiple groups without replacing the existing list.
+- **`G`**: This flag stands for "groups," specifying the group to add the user to.
+- **`webops`**: This is the group to which the user `btran` is being added.
+- **`btran`**: This is the user whose account is being modified.
+
+**Expected Output:**
+- The user `btran` will be added to the supplementary groups `webops`, `proj-falcon`, and `ssh-users`. The original groups `engineering` and `engineering` will remain unchanged.
+
+**Risks:**
+- **Deleting Data**: If the user `btran` has any sensitive data in the `engineering-design` directory, removing them from the `engineering` group could potentially delete that data.
+- **Changing Access**: If the user `btran` has any access to the `engineering-design` directory, removing them from the `engineering` group could prevent them from accessing that directory.
+- **Locking Out Users**: If the user `btran` has any access to the `engineering-design` directory, removing them from the `engineering` group could prevent them from accessing that directory.
+
+**Validation:**
+- **`ls -ld /srv/lab03/webops-runbooks`**: Ensure the user `btran` can list the contents of the `webops-runbooks` directory.
+- **`ls -ld /srv/lab03/engineering-design`**: Ensure the user `btran` cannot list the contents of the `engineering-design` directory, indicating the group membership change has been applied successfully.
+
+**Recommendation:**
+- Before applying this change, it's a good practice to validate the

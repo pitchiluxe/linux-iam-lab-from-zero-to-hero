@@ -1,0 +1,9 @@
+The learner's terminal output indicates that the server is rejecting the key due to incorrect ownership or permissions on the `/home/hlopez` directory. The server log shows that the client provided the password, but the server did not accept it because the directory `/home/hlopez` has incorrect ownership or permissions.
+
+To confirm this issue, you can run the following command to check the ownership and permissions of the `/home/hlopez` directory:
+
+```bash
+ls -ld /home/hlopez
+```
+
+This command will output the ownership and permissions of the `/home/hlopez` directory, allowing you to verify if the directory is owned by `root` and has incorrect permissions.

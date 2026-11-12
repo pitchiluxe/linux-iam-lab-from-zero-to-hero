@@ -1,0 +1,21 @@
+[Unit]
+Description=Linux IAM Lab course portal
+After=network.target lab-agent.service
+Wants=lab-agent.service
+
+[Service]
+Type=simple
+User=labportal
+Group=labportal
+SupplementaryGroups=labagent
+Environment=LAB_PORTAL_PORT=8080
+ExecStart=/usr/bin/python3 /opt/linux-iam-lab/bin/lab-portal.py
+Restart=always
+RestartSec=2
+NoNewPrivileges=yes
+ProtectSystem=strict
+ProtectHome=yes
+PrivateTmp=yes
+
+[Install]
+WantedBy=multi-user.target

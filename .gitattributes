@@ -1,0 +1,4 @@
+# Keep LF everywhere: the guest/ scripts run inside Linux and break with CRLF.
+* text=auto eol=lf
+*.png binary
+*.jpg binary

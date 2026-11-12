@@ -1,0 +1,358 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Linux IAM Lab From Zero To Hero</title>
+  <meta name="description" content="A hands-on Linux lab for Identity and Access Management: your own Ubuntu server, real users, groups, permissions, sudo, SSH keys, PAM, SSSD and LDAP, 32 checked tickets and a contractor capstone." />
+  <meta name="author" content="Erick Omari" />
+  <meta property="og:title" content="Linux IAM Lab From Zero To Hero" />
+  <meta property="og:description" content="Grant, troubleshoot, audit and revoke access on a real Linux server. 9 modules, 32 tickets, one capstone." />
+  <meta property="og:image" content="img/01-linux-desktop.png" />
+  <link rel="icon" href="img/favicon.svg" type="image/svg+xml" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Kalam:wght@300;400;700&family=Literata:ital,opsz,wght@0,7..72,400;0,7..72,600;1,7..72,400&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <a class="skip" href="#main">Skip to the lesson</a>
+
+  <!-- The classroom wall: the one loud thing on the page -->
+  <header class="wall">
+    <div class="board">
+      <div class="board__surface">
+        <p class="board__date">Lesson 0: on Linux, every access decision is a file you can read</p>
+        <h1 id="board-title" class="chalk chalk--title"><span class="write">Linux IAM Lab:</span> <span class="write write--2">from zero to hero</span></h1>
+        <p id="board-sub" class="chalk board__sub">
+          Run your own Ubuntu server. Onboard people, give them exactly the access
+          they were approved for, fix their broken logins, and take it all away on
+          their last day. Then prove it. 32 tickets. One capstone.
+        </p>
+
+        <svg class="board__diagram" viewBox="0 0 520 250" aria-hidden="true">
+          <defs>
+            <filter id="chalky" x="-5%" y="-5%" width="110%" height="110%">
+              <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" seed="3" />
+              <feDisplacementMap in="SourceGraphic" scale="2.2" />
+            </filter>
+            <marker id="tip" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+              <path d="M0 0 L10 5 L0 10" fill="none" stroke="#eef0ea" stroke-width="1.6" />
+            </marker>
+          </defs>
+          <g class="draw" filter="url(#chalky)" fill="none" stroke="#eef0ea" stroke-width="2" stroke-linecap="round">
+            <rect pathLength="1" x="12" y="98" width="96" height="54" rx="6" />
+            <rect pathLength="1" x="170" y="98" width="128" height="54" rx="6" />
+            <rect pathLength="1" x="372" y="28" width="132" height="54" rx="6" />
+            <rect pathLength="1" x="372" y="168" width="132" height="54" rx="6" />
+            <path pathLength="1" d="M110 125 L166 125" marker-end="url(#tip)" />
+            <path pathLength="1" d="M300 116 C330 90, 340 62, 368 56" marker-end="url(#tip)" />
+            <path pathLength="1" d="M300 136 C330 160, 340 188, 368 194" marker-end="url(#tip)" />
+          </g>
+          <g class="chalk-svg-text" filter="url(#chalky)">
+            <text x="60" y="131" text-anchor="middle">Ticket</text>
+            <text x="234" y="122" text-anchor="middle">Linux</text>
+            <text x="234" y="143" text-anchor="middle">server</text>
+            <text x="438" y="61" text-anchor="middle">groups + ACLs</text>
+            <text x="438" y="201" text-anchor="middle">sudo + SSH</text>
+            <text x="138" y="112" text-anchor="middle" class="tiny">useradd</text>
+            <text x="320" y="72" text-anchor="middle" class="tiny">grant</text>
+            <text x="318" y="204" text-anchor="middle" class="tiny">revoke</text>
+            <text x="234" y="186" text-anchor="middle" class="tiny">joiner, mover, leaver</text>
+          </g>
+          <g class="chalk-dots" aria-hidden="true">
+            <circle r="4.5" opacity="0"><animateMotion dur="3.2s" begin="2.8s" repeatCount="indefinite" calcMode="linear" keyPoints="0;1;1" keyTimes="0;0.3;1" path="M110 125 L166 125" /><animate attributeName="opacity" dur="3.2s" begin="2.8s" repeatCount="indefinite" values="1;1;0;0" keyTimes="0;0.3;0.31;1" /></circle>
+            <circle r="4.5" opacity="0"><animateMotion dur="3.2s" begin="2.8s" repeatCount="indefinite" calcMode="linear" keyPoints="0;0;1;1" keyTimes="0;0.36;0.78;1" path="M300 116 C330 90, 340 62, 368 56" /><animate attributeName="opacity" dur="3.2s" begin="2.8s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.35;0.36;0.78;0.79;1" /></circle>
+            <circle r="4.5" opacity="0"><animateMotion dur="3.2s" begin="2.8s" repeatCount="indefinite" calcMode="linear" keyPoints="0;0;1;1" keyTimes="0;0.36;0.78;1" path="M300 136 C330 160, 340 188, 368 194" /><animate attributeName="opacity" dur="3.2s" begin="2.8s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.35;0.36;0.78;0.79;1" /></circle>
+          </g>
+        </svg>
+      </div>
+      <div class="board__tray">
+        <a class="chalkstick" href="#setup-title">How to install it</a>
+        <a class="chalkstick" href="manual.html">Read the setup manual</a>
+        <a class="chalkstick chalkstick--yellow" href="#contact-title" data-ask-access>Ask for access</a>
+        <span class="eraser" aria-hidden="true"></span>
+      </div>
+    </div>
+
+    <!-- Corkboard of quotes -->
+    <section class="cork" aria-labelledby="quotes-title">
+      <h2 id="quotes-title" class="visually-hidden">Words to remember</h2>
+      <figure class="note note--yellow">
+        <blockquote>Every program and every user of the system should operate using the least set of privileges necessary to complete the job.</blockquote>
+        <figcaption>Saltzer &amp; Schroeder, 1975</figcaption>
+      </figure>
+      <figure class="note note--blue">
+        <blockquote>#1 Respect the privacy of others. #2 Think before you type. #3 With great power comes great responsibility.</blockquote>
+        <figcaption>The lecture sudo prints the first time you use it</figcaption>
+      </figure>
+      <figure class="note note--pink">
+        <blockquote>Attackers don't break in. They log in.</blockquote>
+        <figcaption>A saying every IAM team repeats</figcaption>
+      </figure>
+      <figure class="note note--green">
+        <blockquote>Never trust, always verify.</blockquote>
+        <figcaption>The Zero Trust motto, John Kindervag</figcaption>
+      </figure>
+      <figure class="note note--white">
+        <blockquote>A locked password does not stop an SSH key. Expire the account.</blockquote>
+        <figcaption>Rule 1 of this lab</figcaption>
+      </figure>
+      <figure class="note note--yellow">
+        <blockquote>Read the log before you change the config.</blockquote>
+        <figcaption>Rule 2 of this lab</figcaption>
+      </figure>
+      <figure class="note note--pink">
+        <blockquote>Never edit sudoers without visudo. Keep a second root session open.</blockquote>
+        <figcaption>Rule 3 of this lab</figcaption>
+      </figure>
+      <figure class="note note--blue">
+        <blockquote>Security is a process, not a product.</blockquote>
+        <figcaption>Bruce Schneier</figcaption>
+      </figure>
+    </section>
+  </header>
+
+  <main id="main" class="book">
+
+    <!-- What the course is -->
+    <section class="page" aria-labelledby="about-title">
+      <h2 id="about-title" class="hand">What this lab is</h2>
+      <p>
+        Most identity work ends on a server. Someone has to create the account, put it in
+        the right groups, make sure it can read the finance share and nothing else, give the
+        helpdesk the one command they need as root, install a contractor's SSH key, and, on the
+        last day, make sure every one of those doors is shut. On Linux all of that lives in
+        files and commands you can read, which makes it the best place to learn how access
+        really works.
+      </p>
+      <p>
+        This lab gives you your own Ubuntu Server in a VirtualBox window, a fictional company
+        with its own users, groups and LDAP directory, and 32 realistic tickets. You type real
+        commands in a real Linux terminal. When you press <em>Check my work</em>, the lab tests
+        the result as the affected people: can Jae read the file, can Dev restart the service but
+        not stop it, is the stolen key refused? A local AI tutor explains commands and errors,
+        and never does the work for you. Nothing leaves your computer.
+      </p>
+      <aside class="margin-note">Runs on a Windows 10 or 11 PC with Oracle VirtualBox 7 and about 5&nbsp;GB of free memory. All software is free. Works offline after the first install.</aside>
+    </section>
+
+    <!-- Syllabus: a real sequence, so it is numbered -->
+    <section class="page" aria-labelledby="syllabus-title">
+      <h2 id="syllabus-title" class="hand">Syllabus</h2>
+      <ol class="syllabus">
+        <li value="1">
+          <h3>First day at the Linux terminal</h3>
+          <p>The prompt, commands and flags, paths, files, nano, man pages, Tab, history and Ctrl+R, and how to get out of trouble.</p>
+          <p class="proof">You keep: the confidence to work on any server you are given.</p>
+        </li>
+        <li value="2">
+          <h3>Read and investigate a system</h3>
+          <p>Pipes, grep, sort and awk on auth logs, find risky files, inspect services, write your first Bash script.</p>
+          <p class="proof">You keep: answers to "who failed to log in, from where, and who got in".</p>
+        </li>
+        <li value="3">
+          <h3>Manage the identity lifecycle</h3>
+          <p>UIDs and GIDs, primary and supplementary groups, service accounts, expiry, lockout, and a full joiner, mover and leaver.</p>
+          <p class="proof">You keep: an offboarding procedure that also stops SSH keys and cron jobs.</p>
+        </li>
+        <li value="4">
+          <h3>Control access to files and directories</h3>
+          <p>Ownership, chmod in numbers and letters, directory traversal, umask, setgid team folders and ACLs.</p>
+          <p class="proof">You keep: access tested as two users, one allowed and one denied.</p>
+        </li>
+        <li value="5">
+          <h3>Delegate administrative privileges</h3>
+          <p>Review who can run what as root, write a command-scoped sudo rule with visudo, and recover when a bad edit breaks sudo.</p>
+          <p class="proof">You keep: a least-privilege sudo rule and the proof it cannot be abused.</p>
+        </li>
+        <li value="6">
+          <h3>Secure remote access</h3>
+          <p>SSH keys and fingerprints, StrictModes, a hardened sshd validated before reload, and revoking a stolen laptop's key.</p>
+          <p class="proof">You keep: a revoked key that is refused even when someone adds it back.</p>
+        </li>
+        <li value="7">
+          <h3>Authentication and centralized identity</h3>
+          <p>Authentication versus authorization, PAM and NSS, and SSSD reading people from the lab's own LDAP directory.</p>
+          <p class="proof">You keep: a fix made in the directory, not as an exception on one server.</p>
+        </li>
+        <li value="8">
+          <h3>Audit and automate IAM work</h3>
+          <p>journalctl and auth.log, auditd watches on identity files, a rerunnable access-report script, checksummed evidence.</p>
+          <p class="proof">You keep: an access-review evidence package an auditor would accept.</p>
+        </li>
+        <li value="9">
+          <h3>Capstone: a contractor's whole lifecycle</h3>
+          <p>Onboard Jordan with exactly the approved access, fix a login that breaks in a different way for every learner, revoke everything at contract end.</p>
+          <p class="proof">You keep: a test report showing what was allowed and what was denied.</p>
+        </li>
+      </ol>
+    </section>
+
+    <!-- Real screenshots, taped in -->
+    <section class="page page--photos" aria-labelledby="photos-title">
+      <h2 id="photos-title" class="hand">What it looks like</h2>
+      <div class="photos">
+        <figure class="photo photo--a">
+          <img src="img/01-linux-desktop.png" alt="The Linux IAM Lab VM window: an Ubuntu desktop logged in as student with a Linux terminal and the course portal open side by side" loading="lazy" width="1920" height="979" />
+          <figcaption>Click Start and your own Linux server opens: a terminal on one side, the course on the other.</figcaption>
+        </figure>
+        <figure class="photo photo--b">
+          <img src="img/03-check-my-work.png" alt="An exercise page with Check my work results: green PASS lines for allowed and denied sudo tests" loading="lazy" width="1440" height="1000" />
+          <figcaption>Check my work runs the real tests: allowed must work, denied must fail.</figcaption>
+        </figure>
+        <figure class="photo photo--c">
+          <img src="img/02-course-map.png" alt="The course map: nine modules with progress bars, next to the Linux terminal and the tutor" loading="lazy" width="1440" height="1000" />
+          <figcaption>Nine modules, your progress, and a tutor that explains but never types for you.</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <!-- Hiring: flashcards -->
+    <section class="page" aria-labelledby="hire-title">
+      <h2 id="hire-title" class="hand">Why it helps you get hired</h2>
+      <p>
+        Identity jobs increasingly ask for "Linux experience", and interviewers check it with
+        the same few scenarios. They don't want definitions; they want to hear what you did and
+        how you proved it. Every card below is a question you will be able to answer from your
+        own lab. Click a card to see where you practise it.
+      </p>
+      <p class="roles">
+        Roles this prepares you for: IAM analyst, IAM engineer, access management analyst,
+        identity administrator, Linux administrator with access duties, junior security engineer.
+      </p>
+      <ul class="cards">
+        <li><button class="card" aria-expanded="false">
+          <span class="card__q">How do you offboard a Linux user without deleting them?</span>
+          <span class="card__a">Module 3. Lock, expire, nologin shell, remove groups, cron and sessions, archive the home, and test the key is refused.</span>
+        </button></li>
+        <li><button class="card" aria-expanded="false">
+          <span class="card__q">Why can a "locked" user still log in?</span>
+          <span class="card__a">Modules 3 and 6. A password lock does not stop SSH keys. You will see it happen, then fix it.</span>
+        </button></li>
+        <li><button class="card" aria-expanded="false">
+          <span class="card__q">Give the helpdesk restart rights without giving them root.</span>
+          <span class="card__a">Module 5. A command-scoped sudo rule, checked with visudo, tested as the user: restart allowed, stop denied.</span>
+        </button></li>
+        <li><button class="card" aria-expanded="false">
+          <span class="card__q">The file is 640 and the user is in the group, but still "Permission denied". Why?</span>
+          <span class="card__a">Module 4. namei -l the path: a parent folder is missing x, or the user has not logged in again since the change.</span>
+        </button></li>
+        <li><button class="card" aria-expanded="false">
+          <span class="card__q">Right password, access denied: authentication or authorization?</span>
+          <span class="card__a">Module 7. The PAM account phase said no. Fix it in the directory group, not on one server.</span>
+        </button></li>
+        <li><button class="card" aria-expanded="false">
+          <span class="card__q">A laptop with an SSH key was stolen. What do you do?</span>
+          <span class="card__a">Module 6. Remove the key by fingerprint, add it to RevokedKeys, and check the logs for its use.</span>
+        </button></li>
+        <li><button class="card" aria-expanded="false">
+          <span class="card__q">How do you prove who changed /etc/passwd?</span>
+          <span class="card__a">Module 8. auditd watches with a key; ausearch shows the auid, the person behind sudo.</span>
+        </button></li>
+        <li><button class="card" aria-expanded="false">
+          <span class="card__q">How would you run an access review on Linux?</span>
+          <span class="card__a">Module 8. A read-only, rerunnable report script, plus checksummed evidence of users, groups, sudo rules and keys.</span>
+        </button></li>
+      </ul>
+    </section>
+
+    <!-- Setup -->
+    <section class="page" aria-labelledby="setup-title">
+      <h2 id="setup-title" class="hand">How to install it</h2>
+      <p>One PowerShell command on your Windows PC. No administrator rights, no Windows features to switch on, and your other virtual machines are never touched.</p>
+      <ul class="facts">
+        <li>Windows 10 (1809 or newer) or Windows 11, Home edition is fine.</li>
+        <li>Oracle VirtualBox 7 already installed.</li>
+        <li>About 5&nbsp;GB of free memory while the lab runs, and 25&nbsp;GB of free disk.</li>
+        <li>Internet for the first install only (about 3.5&nbsp;GB of downloads, every file checked against its published checksum).</li>
+      </ul>
+      <div class="term" role="img" aria-label="PowerShell command to install the lab">
+        <div class="term__bar"><span></span><span></span><span></span></div>
+        <span class="term__where">Windows PowerShell</span><br />
+        <span class="ps">PS&gt;</span> <code>powershell -NoProfile -ExecutionPolicy Bypass -File .\Install-LinuxIAMLab.ps1</code>
+      </div>
+      <p>
+        The installer builds a dedicated Ubuntu Server 24.04 LTS virtual machine, sets up the
+        course, the lab's own directory and the AI tutor inside it, saves a known-good snapshot,
+        and puts three shortcuts on your desktop: <strong>Start</strong>, <strong>Stop</strong>
+        and <strong>Reset Linux IAM Lab</strong>.
+      </p>
+      <div class="term" role="img" aria-label="What you see in the Linux terminal">
+        <div class="term__bar"><span></span><span></span><span></span></div>
+        <span class="term__where">Inside the Linux VM window</span><br />
+        <span class="lx">student@iamlab01:~$</span> <code>lab check m04-permissions</code><br />
+        <span class="out">PASS: ALLOWED as jkim (finance): read<br />PASS: DENIED as btran (not finance): read<br />RESULT: all checks passed</span>
+      </div>
+      <p>Broke something while practising? <em>Retry exercise</em> resets one ticket; <strong>Reset Linux IAM Lab</strong> saves your work and brings the whole server back to a clean start.</p>
+      <p><a href="manual.html"><strong>Read the full lab manual</strong></a>: every step from an empty PC to the capstone, with real screenshots and real output from a running lab.</p>
+    </section>
+
+    <!-- Homework: checklists -->
+    <section class="page" aria-labelledby="hw-title">
+      <h2 id="hw-title" class="hand">Homework after the capstone</h2>
+      <p>The lab is only half the job. The other half is making sure the right people can see it. Tick these off as you go; this page remembers them on your device.</p>
+
+      <div class="homework">
+        <fieldset class="checklist" data-list="github">
+          <legend class="hand">Your GitHub</legend>
+          <label><input type="checkbox" /><span>A repository for your capstone, named for what it does, such as <code>linux-contractor-access-lifecycle</code>.</span></label>
+          <label><input type="checkbox" /><span>Publish your access-report script with a README: what it checks, how to run it, why it changes nothing.</span></label>
+          <label><input type="checkbox" /><span>Add your sudo rule and sshd hardening file with a short note on why each line is there.</span></label>
+          <label><input type="checkbox" /><span>Include the capstone test report: what was allowed, what was denied, and the CAP-9002 root cause.</span></label>
+          <label><input type="checkbox" /><span>Remove passwords, tokens, private keys and real hostnames before every push.</span></label>
+          <label><input type="checkbox" /><span>Write a short profile README: who you are, what you built, how to reach you.</span></label>
+        </fieldset>
+
+        <fieldset class="checklist" data-list="linkedin">
+          <legend class="hand">Your LinkedIn</legend>
+          <label><input type="checkbox" /><span>Headline that says what you do, for example: <em>IAM Analyst | Linux access control, sudo, SSH, LDAP/SSSD | Bash automation</em>.</span></label>
+          <label><input type="checkbox" /><span>An About section of three sentences: what you built, what you can do, the role you want.</span></label>
+          <label><input type="checkbox" /><span>Feature the capstone repository and its test report.</span></label>
+          <label><input type="checkbox" /><span>One Projects entry: onboard, troubleshoot, revoke and evidence a contractor on Linux.</span></label>
+          <label><input type="checkbox" /><span>Skills: Linux, Bash, sudo, OpenSSH, PAM, SSSD, LDAP, auditd, access reviews, least privilege.</span></label>
+          <label><input type="checkbox" /><span>Post once: a screenshot of an allowed and a denied test, and the one thing it taught you.</span></label>
+          <label><input type="checkbox" /><span>Then aim for a Linux certification (Linux Foundation LFCS or CompTIA Linux+) next.</span></label>
+        </fieldset>
+      </div>
+      <p class="done-stamp" hidden>Homework complete. Go apply.</p>
+    </section>
+
+    <!-- Contact -->
+    <section class="page page--contact" aria-labelledby="contact-title">
+      <h2 id="contact-title" class="hand">Questions or access? Ask the author</h2>
+      <div class="contact">
+        <figure class="idcard">
+          <img src="img/author.jpg" alt="Portrait of Erick Omari" width="300" height="285" loading="lazy" />
+          <figcaption>
+            <strong>Erick Omari</strong>
+            Author of this lab. Questions, bugs and ideas are welcome.
+          </figcaption>
+        </figure>
+
+        <form class="letter" id="contact-form" novalidate>
+          <p class="letter__hint">This opens your email app with the message ready to send. To get the lab's code, say so and include your GitHub username.</p>
+          <label for="c-name">Your name</label>
+          <input id="c-name" name="name" autocomplete="name" required />
+          <label for="c-msg">Your message</label>
+          <textarea id="c-msg" name="message" rows="5" required></textarea>
+          <p class="letter__error" role="alert" hidden>Write your name and a message first.</p>
+          <div class="letter__actions">
+            <button type="submit" class="pen">Write to Erick</button>
+            <a class="link" href="https://github.com/pitchiluxe">GitHub profile</a>
+            <a class="link" id="linkedin-link" href="#" hidden>LinkedIn</a>
+          </div>
+        </form>
+      </div>
+    </section>
+  </main>
+
+  <footer class="rules">
+    <h2 class="hand">Lab rules</h2>
+    <p>Practise only on the lab's own server, never on an employer's. Validate before you reload. Keep passwords and private keys out of screenshots and out of Git. Everyone in the lab directory is fictional.</p>
+    <p class="small">Linux IAM Lab From Zero To Hero, by Erick Omari. A companion to <a href="https://iam-lab-from-zero-to-hero.vercel.app/">IAM Lab From Zero To Hero</a>.</p>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>

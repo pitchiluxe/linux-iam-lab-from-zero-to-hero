@@ -1,0 +1,146 @@
+/* The manual: same classroom, quieter board, the exercise book does the work. */
+.wall--short { padding-bottom: clamp(1rem, 3vw, 2rem); }
+.board--short { box-shadow: 0 10px 24px rgba(40, 30, 20, 0.22); }
+.board__surface--short {
+  padding: clamp(1.1rem, 3vw, 2rem) clamp(1.25rem, 4vw, 3rem);
+  grid-template-areas: "date diagram" "title diagram" "sub diagram" "ghost diagram";
+}
+.board__diagram--manual { max-width: 520px; justify-self: end; }
+/* this drawing is scaled down more than the landing page's, so its lettering is drawn larger */
+.board__diagram--manual .chalk-svg-text { font-size: 23px; }
+.board__diagram--manual .chalk-svg-text .tiny { font-size: 20px; }
+/* the chalk aside sits in its own row under the subtitle, so it never overlaps the drawing */
+.board__surface--short::before {
+  content: "id → groups → mode bits → ACL → sudo";
+  position: static; grid-area: ghost; justify-self: start; margin-top: 0.9rem;
+  transform: rotate(-2deg);
+}
+.chalk--manual { font-size: clamp(2.2rem, 5vw, 3.6rem); }
+.chalk-link { color: var(--chalk-yellow); text-decoration-thickness: 1px; text-underline-offset: 3px; }
+.chalk-link:hover { color: var(--chalk); }
+
+.manual-layout {
+  max-width: 1180px; margin: 0 auto;
+  display: grid; grid-template-columns: 15.5rem minmax(0, 1fr); gap: 1.5rem; align-items: start;
+}
+.toc {
+  position: sticky; top: 1rem;
+  padding: 1rem 1rem 1.1rem 1.2rem;
+  background:
+    linear-gradient(180deg, transparent 2.4rem, var(--margin) 2.4rem 2.5rem, transparent 2.5rem),
+    repeating-linear-gradient(180deg, transparent 0 1.55rem, #dbe8f4 1.55rem 1.6rem) 0 2.5rem/100% 100% no-repeat,
+    #fff;
+  border: 1px solid #d8d8d0; box-shadow: 2px 3px 0 #e8e4d8;
+  transform: rotate(-0.6deg);
+}
+.toc__title { margin: 0 0 0.9rem; font-size: 1.35rem; }
+.toc ol { margin: 0; padding-left: 1.2rem; }
+.toc li { margin: 0 0 0.25rem; font-size: 0.95rem; line-height: 1.6; }
+.toc a { color: var(--graphite); text-decoration: none; }
+.toc a:hover, .toc a:focus-visible { color: var(--ink-blue); text-decoration: underline; }
+
+.manual-book { min-width: 0; width: 100%; } /* let the column shrink; wide printouts scroll inside themselves */
+.manual-book .page > * { max-width: 72ch; }
+.manual-book :not(pre) > code { overflow-wrap: anywhere; }
+.manual-book .page > .table-wrap, .manual-book .page > .printout, .manual-book .page > .manual-photo { max-width: 100%; }
+.manual-book h3 { margin: calc(var(--line) * 1) 0 calc(var(--line) * 0.5); font-size: 1.3rem; line-height: var(--line); color: var(--graphite); }
+.manual-book h3 + p { margin-top: 0; }
+.manual-book ul, .manual-book ol { margin: 0 0 var(--line); padding-left: 1.4rem; }
+.manual-book li { margin-bottom: 0.2rem; }
+.manual-book li > ul, .manual-book li > ol { margin: 0.2rem 0 0.2rem; }
+
+/* code: a typed printout clipped into the book */
+.printout {
+  position: relative; overflow-x: auto;
+  margin: 0 0 var(--line); padding: 1.1rem 1.2rem;
+  font: 0.86rem/1.55 Consolas, 'Courier New', monospace; color: #1d2228;
+  background: #f4f6f8; border-left: 4px solid #9aa7b4;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+}
+.printout code { background: none; padding: 0; font-size: inherit; }
+
+/* tables: a ruled grid in pencil */
+.table-wrap { overflow-x: auto; margin: 0 0 var(--line); }
+.manual-book table { border-collapse: collapse; width: 100%; background: rgba(255, 255, 255, 0.92); font-size: 0.97rem; line-height: 1.5; }
+.manual-book th { text-align: left; font: 700 1.05rem var(--hand); color: var(--ink-blue); border-bottom: 2px solid var(--graphite); padding: 0.45rem 0.7rem; }
+.manual-book td { vertical-align: top; border-bottom: 1px solid #cfd6de; padding: 0.45rem 0.7rem; }
+
+/* blockquotes in the manual are the teacher's notes */
+.teacher-note {
+  margin: 0 0 var(--line); padding: 0.8rem 1rem 0.2rem 1.1rem;
+  background: var(--note-yellow); box-shadow: 0 4px 8px rgba(60, 40, 20, 0.15);
+  transform: rotate(-0.4deg);
+}
+.teacher-note p { margin: 0 0 0.6rem !important; line-height: 1.55; }
+
+/* screenshots */
+.manual-photo { margin: 0.5rem 0 calc(var(--line) * 1.25); transform: rotate(-0.5deg); max-width: 900px !important; }
+.manual-part:nth-child(even) .manual-photo { transform: rotate(0.6deg); }
+
+/* left margin: contents, then hand-drawn IAM sketches spread down the whole manual */
+.manual-side {
+  align-self: stretch;
+  display: flex; flex-direction: column; gap: 2rem;
+  padding-bottom: 2rem;
+}
+.manual-side .toc { position: static; }
+/* each sketch owns an equal slice of the column and rides along (sticky) while you read that slice */
+.sketch-slot { flex: 1 1 0; padding-top: 0.75rem; }
+.sketch-slot .sketch { position: sticky; top: 1.75rem; }
+.sketch {
+  position: relative; margin: 0;
+  padding: 1.5rem 0.8rem 0.9rem;
+  background: var(--paper); border: 1px solid #d8d8d0;
+  box-shadow: 2px 4px 8px rgba(40, 30, 20, 0.14);
+}
+.sketch::before { /* masking tape */
+  content: ""; position: absolute; top: -9px; left: 50%; width: 76px; height: 20px; margin-left: -38px;
+  background: rgba(243, 231, 161, 0.75); box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  transform: rotate(-3deg);
+}
+.sketch-slot:nth-of-type(odd) .sketch { transform: rotate(0.9deg); }
+.sketch-slot:nth-of-type(even) .sketch { transform: rotate(-1.1deg); }
+.sketch--blue { border-top: 5px solid var(--note-blue); }
+.sketch--yellow { border-top: 5px solid var(--note-yellow); }
+.sketch--green { border-top: 5px solid var(--note-green); }
+.sketch--pink { border-top: 5px solid var(--note-pink); }
+@media (prefers-reduced-motion: no-preference) {
+  /* the four steps light up in turn: install, start, ticket, check */
+  .board__diagram--manual .draw > rect {
+    animation: chalk-draw 650ms cubic-bezier(.5,.1,.3,1) forwards, step-glow 4s linear infinite;
+  }
+  .board__diagram--manual .draw > rect:nth-child(1) { animation-delay: 0.5s, 3.2s; }
+  .board__diagram--manual .draw > rect:nth-child(2) { animation-delay: 0.75s, 4.2s; }
+  .board__diagram--manual .draw > rect:nth-child(3) { animation-delay: 1.0s, 5.2s; }
+  .board__diagram--manual .draw > rect:nth-child(4) { animation-delay: 1.25s, 6.2s; }
+  @keyframes step-glow { 0%, 22%, 100% { stroke: #eef0ea; stroke-width: 2; } 6%, 16% { stroke: #f3e7a1; stroke-width: 3.2; } }
+
+  /* margin sketches lift when you point at them */
+  .sketch { transition: translate 200ms ease, box-shadow 200ms ease; }
+  .sketch:hover { translate: 0 -4px; box-shadow: 4px 10px 16px rgba(40, 30, 20, 0.2); }
+}
+.sketch figcaption { margin: 0 0 0.5rem; font-size: 1.15rem; line-height: 1.3; color: var(--ink-blue); text-align: center; }
+.sketch svg { display: block; width: 100%; height: auto; overflow: visible; }
+.sketch text { font-family: var(--hand); font-size: 14px; fill: var(--graphite); }
+.sketch text.small { font-size: 11.5px; fill: var(--graphite-soft); }
+.sketch text.strong { font-weight: 700; }
+.sketch text.mark { fill: var(--margin); font-size: 15px; }
+.sketch .ink, .sketch .ink path { stroke: var(--ink-blue); stroke-width: 1.8; stroke-linecap: round; fill: none; }
+.sketch .box rect, .sketch path.box { fill: rgba(255, 255, 255, 0.85); stroke: var(--graphite); stroke-width: 1.4; }
+.sketch .venn circle { fill-opacity: 0.75; stroke: var(--graphite); stroke-width: 1.3; mix-blend-mode: multiply; }
+.sketch__list { margin: 0; padding: 0; list-style: none; font: 1.02rem/1.5 var(--hand); }
+.sketch__list li { position: relative; padding-left: 1.6rem; margin-bottom: 0.35rem; }
+.sketch__list li::before { content: "\2713"; position: absolute; left: 0.2rem; color: var(--margin); font-weight: 700; }
+.sketch__foot { margin: 0.6rem 0 0; font: italic 0.9rem/1.4 var(--text); color: var(--graphite-soft); text-align: center; }
+
+@media (max-width: 820px) {
+  .board__surface--short { grid-template-areas: "date" "title" "sub" "diagram" "ghost"; }
+  .board__surface--short::before { display: block; }
+}
+
+@media (max-width: 960px) {
+  .manual-layout { grid-template-columns: 1fr; gap: 0; }
+  .toc { position: static; transform: none; margin: 0 clamp(0.75rem, 3vw, 2rem) 1.25rem; }
+  .manual-side { display: block; padding-bottom: 0; }
+  .sketch-slot { display: none; } /* phones read the manual straight through */
+}
