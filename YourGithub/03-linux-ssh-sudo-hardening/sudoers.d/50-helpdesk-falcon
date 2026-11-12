@@ -1,0 +1,13 @@
+# /etc/sudoers.d/50-helpdesk-falcon   (ticket OPS-5002)
+# The helpdesk may restart and check the Falcon web app. Nothing else as root.
+# Replaces an old rule that let helpdesk run vim as root (an editor as root = a root shell: :!bash).
+# Install: write to /tmp, `visudo -cf`, then `install -m 440 -o root -g root`.
+
+# Name the command set once; the rule below reads like the ticket.
+# Full paths, exact arguments: "stop", other units, or any other program are not matched.
+Cmnd_Alias FALCON_OPS = /usr/bin/systemctl restart falcon-web.service, /usr/bin/systemctl status falcon-web.service
+
+# %helpdesk   -> the group, so joiners and leavers are handled by group membership
+# (root)      -> run as root only
+# no NOPASSWD -> the person re-enters their own password: proves it is them, and leaves a log line
+%helpdesk ALL=(root) FALCON_OPS

@@ -1,0 +1,17 @@
+# /etc/sudoers.d/70-cap9001-jlee
+# Ticket CAP-9001: contractor Jordan Lee may restart the Falcon web app. Nothing else as root.
+# Install: write to /tmp, check with `visudo -cf`, then `install -m 440 -o root -g root`.
+#   A syntax error in a sudoers file can lock every admin out of sudo, so it is never edited in place.
+#
+# jlee                  -> one named person, not a group: this is a time-limited exception
+# ALL=                  -> on this host (sudoers can be shared across hosts; here there is one)
+# (root)                -> the command runs as root, and only as root
+# NOPASSWD:             -> the account is key-only (no usable password), so sudo cannot ask for one;
+#                          acceptable because the command list below is a single, harmless action
+# /usr/bin/systemctl    -> full path: sudo would otherwise look the program up, and a planted
+#                          "systemctl" earlier in PATH could run instead
+# restart falcon-web.service -> the exact arguments. sudo matches them literally, so
+#                          "stop", "status" or any other unit are all DENIED (tested)
+#
+# Removed on the last day of the contract (CAP-9003), then `visudo -c` to prove the policy still parses.
+jlee ALL=(root) NOPASSWD: /usr/bin/systemctl restart falcon-web.service

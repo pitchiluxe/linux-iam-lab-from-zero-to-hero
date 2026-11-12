@@ -7,6 +7,7 @@ A hands-on Linux course for future **Identity and Access Management analysts and
 - Offline after the first install; your other virtual machines are never touched
 
 Landing page: <https://linux-iam-lab-from-zero-to-hero.vercel.app> (source in [`landing/`](landing/)).
+After the capstone: ready-to-publish portfolio content in [`YourGithub/`](YourGithub/) and [`YourLinkedin/`](YourLinkedin/).
 
 ---
 

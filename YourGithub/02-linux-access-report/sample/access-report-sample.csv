@@ -1,0 +1,13 @@
+user,uid,primary_group,groups,shell,password_status,account_expires,sudo
+aokafor,2001,aokafor,finance,/bin/bash,P,never,no
+btran,2003,btran,engineering;proj-falcon;ssh-users,/bin/bash,P,never,no
+cdiaz,2004,cdiaz,hr;ssh-users,/bin/bash,P,never,no
+dpatel,2006,dpatel,helpdesk,/bin/bash,P,never,yes
+enovak,2008,enovak,engineering;ssh-users,/bin/bash,P,never,no
+hlopez,2005,hlopez,hr;ssh-users,/bin/bash,P,never,no
+jkim,2002,jkim,finance,/bin/bash,P,never,no
+jlee,2010,jlee,,/usr/sbin/nologin,L,1970-01-02,no
+kwright,2009,kwright,proj-falcon,/bin/bash,P,2025-12-31,no
+labctl,1000,labctl,ssh-users,/bin/bash,L,never,yes
+rmorgan,2007,rmorgan,auditors,/bin/bash,P,never,yes
+student,1001,student,adm;autologin;diradmins;labagent;ssh-users;sudo;systemd-journal,/bin/bash,P,never,yes

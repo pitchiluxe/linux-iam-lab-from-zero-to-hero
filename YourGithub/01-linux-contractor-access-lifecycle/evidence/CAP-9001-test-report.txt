@@ -1,0 +1,73 @@
+Linux IAM Lab - Capstone test report (fictional contractor Jordan Lee, jlee)
+Generated: 2026-11-12T15:53:33+00:00 on iamlab01 by the lab agent for learner 'student'
+CAP-9002 injected fault (for the reviewer): wrongkey
+
+=== Stage 1 passed 2026-11-12T15:53:04+00:00 ===
+PASS: comment matches CAP-9001
+PASS: shell /bin/bash
+PASS: account expires 2027-03-31
+PASS: home folder private (750, jlee)
+PASS: roles exactly proj-falcon, ssh-users
+PASS: no usable password (key-only)
+PASS: sudo rule file /etc/sudoers.d/70-cap9001-jlee (0440)
+PASS: visudo -c OK
+PASS: ALLOWED: SSH login with Jordan's key
+PASS: ALLOWED: create a file in /srv/projects/falcon
+PASS: ALLOWED: sudo -n systemctl restart falcon-web.service
+PASS: DENIED: read /srv/finance/budget-2027.csv
+PASS: DENIED: list /srv/hr
+PASS: DENIED: sudo systemctl stop falcon-web.service
+PASS: DENIED: sudo cat /etc/shadow
+PASS: DENIED: password login
+
+=== Stage 2 passed 2026-11-12T15:53:12+00:00 ===
+PASS: comment matches CAP-9001
+PASS: shell /bin/bash
+PASS: account expires 2027-03-31
+PASS: home folder private (750, jlee)
+PASS: roles exactly proj-falcon, ssh-users
+PASS: no usable password (key-only)
+PASS: sudo rule file /etc/sudoers.d/70-cap9001-jlee (0440)
+PASS: visudo -c OK
+PASS: ALLOWED: SSH login with Jordan's key
+PASS: ALLOWED: create a file in /srv/projects/falcon
+PASS: ALLOWED: sudo -n systemctl restart falcon-web.service
+PASS: DENIED: read /srv/finance/budget-2027.csv
+PASS: DENIED: list /srv/hr
+PASS: DENIED: sudo systemctl stop falcon-web.service
+PASS: DENIED: sudo cat /etc/shadow
+PASS: DENIED: password login
+
+=== Stage 3 passed 2026-11-12T15:53:13+00:00 ===
+PASS: account kept for legal hold
+PASS: password locked
+PASS: account expired
+PASS: no login shell
+PASS: no groups
+PASS: sudo rule removed
+PASS: visudo -c OK
+PASS: SSH key removed
+PASS: no running processes
+PASS: no scheduled jobs
+PASS: home archived to /srv/archive/offboarded/jlee-home.tar.gz
+PASS: DENIED: SSH login with Jordan's key
+PASS: DENIED: any sudo for jlee
+PASS: DENIED: write to /srv/projects/falcon
+
+=== Re-test of revocation at report time ===
+PASS: account kept for legal hold
+PASS: password locked
+PASS: account expired
+PASS: no login shell
+PASS: no groups
+PASS: sudo rule removed
+PASS: visudo -c OK
+PASS: SSH key removed
+PASS: no running processes
+PASS: no scheduled jobs
+PASS: home archived to /srv/archive/offboarded/jlee-home.tar.gz
+PASS: DENIED: SSH login with Jordan's key
+PASS: DENIED: any sudo for jlee
+PASS: DENIED: write to /srv/projects/falcon
+
+notes.md sha256: 103260cf83645256dee5d3ac94c8444cec687afd47cb013cfa9366f1633ecec2
