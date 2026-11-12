@@ -19,7 +19,9 @@ do_check() {
   grep -qE '^[[:space:]]*%helpdesk' "$RULE" && pass "granted to the helpdesk group" || fail "grant the rule to %helpdesk, not to a single user"
   grep -q NOPASSWD "$RULE" && fail "rule uses NOPASSWD - the ticket requires a password" || pass "password required (no NOPASSWD)"
   may dpatel /usr/bin/systemctl restart falcon-web.service && pass "policy: dpatel may restart falcon-web" || fail "dpatel may not restart falcon-web.service"
-  may dpatel /usr/bin/systemctl status falcon-web.service && pass "policy: dpatel may view falcon-web status" || fail "dpatel may not run systemctl status falcon-web.service"
+  # "view its status" needs no sudo - and as root, systemctl status opens a pager (less: !sh = root shell)
+  may dpatel /usr/bin/systemctl status falcon-web.service && fail "dpatel may run systemctl status as root - not needed (it works without sudo) and it opens a pager as root; take it out of the rule" || pass "policy: status is not granted via sudo (it needs none)"
+  as_user dpatel systemctl status falcon-web.service --no-pager 2>/dev/null | grep -q 'falcon-web.service' && pass "dpatel can view falcon-web status without sudo" || fail "dpatel cannot view the status with plain systemctl status"
   may dpatel /usr/bin/systemctl stop falcon-web.service && fail "dpatel may STOP falcon-web - too broad" || pass "policy: dpatel may not stop falcon-web"
   may dpatel /usr/bin/systemctl restart ssh.service && fail "dpatel may restart other services - too broad" || pass "policy: dpatel may not restart other services"
   may dpatel /usr/bin/vim /etc/hosts && fail "dpatel may still run vim as root" || pass "policy: dpatel may not run vim as root"
@@ -33,6 +35,6 @@ do_check() {
 }
 do_solve() {
   rm -f "$LEGACY"
-  printf '# OPS-5002\nCmnd_Alias FALCON_OPS = /usr/bin/systemctl restart falcon-web.service, /usr/bin/systemctl status falcon-web.service\n%%helpdesk ALL=(root) FALCON_OPS\n' > "$RULE.tmp"
+  printf '# OPS-5002 (status needs no sudo)\nCmnd_Alias FALCON_OPS = /usr/bin/systemctl restart falcon-web.service\nDefaults!FALCON_OPS noexec\n%%helpdesk ALL=(root) FALCON_OPS\n' > "$RULE.tmp"
   chmod 440 "$RULE.tmp"; visudo -cf "$RULE.tmp" >/dev/null && mv "$RULE.tmp" "$RULE"
 }
