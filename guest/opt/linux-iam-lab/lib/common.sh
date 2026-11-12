@@ -61,6 +61,31 @@ as_user() {
   h="$(getent passwd "$u" | cut -d: -f6)"
   (cd / && runuser -u "$u" -- env HOME="${h:-/}" USER="$u" LOGNAME="$u" "$@")
 }
+# Anything the lab does inside the learner's home (/home/student) runs AS the learner.
+# The learner controls that folder and can plant symlinks there, so a root process that
+# writes, deletes or chowns paths in it could be redirected to system files.
+as_student() { as_user student "$@"; }
+
+# Run a LEARNER-WRITTEN program as root, but sandboxed: read-only system, no network,
+# no access to systemd/D-Bus (/run is an empty tmpfs), lab secrets hidden, and only the
+# capabilities needed to read account data (passwd -S, chage -l, sudo -l -U).
+# Writable: only the folder given as $1 (from sandbox_dir) and a private, empty /tmp.
+sandbox_dir() { install -d -o root -g root -m 0711 /var/lib/lab-check; mktemp -d /var/lib/lab-check/run-XXXXXX; }
+sandbox_root() { # rw-dir timeout-seconds command...
+  local rw=$1 t=$2; shift 2
+  systemd-run --quiet --wait --pipe --collect \
+    -p ProtectSystem=strict -p ProtectHome=read-only -p ReadWritePaths="$rw" \
+    -p PrivateNetwork=yes -p PrivateDevices=yes -p PrivateIPC=yes -p PrivateTmp=yes \
+    -p ProtectKernelTunables=yes -p ProtectKernelModules=yes -p ProtectKernelLogs=yes \
+    -p ProtectControlGroups=yes -p ProtectClock=yes -p ProtectHostname=yes -p ProtectProc=invisible \
+    -p RestrictSUIDSGID=yes -p LockPersonality=yes -p RestrictNamespaces=yes -p NoNewPrivileges=yes \
+    -p RestrictAddressFamilies=AF_UNIX -p SystemCallArchitectures=native \
+    -p "TemporaryFileSystem=/run:ro" \
+    -p "InaccessiblePaths=-$VAR -$ETC -/root -/home/labctl -/etc/ssh -/etc/sssd -/etc/ldap -/var/lib/ldap -/var/lib/sss -/var/log" \
+    -p "CapabilityBoundingSet=CAP_DAC_READ_SEARCH CAP_SETUID CAP_SETGID CAP_AUDIT_WRITE" \
+    -p RuntimeMaxSec="$t" -p WorkingDirectory=/tmp -E HOME=/home/student \
+    "$@" </dev/null
+}
 can() { local u=$1; shift; as_user "$u" "$@" >/dev/null 2>&1; }
 cannot() { ! can "$@"; }
 
@@ -95,9 +120,9 @@ ensure_keypair() { # name -> creates $VAR/keys/<name> + $DATA/keys/<name>.pub
 key_fpr() { ssh-keygen -lf "$1" | awk '{print $2}'; }
 
 # ---- learner answer files (key=value) -------------------------------------
-answer() { # file key -> value (trimmed, lowercased)
+answer() { # file key -> value (trimmed, lowercased); read as the learner, never as root
   [ -f "$1" ] || return 1
-  grep -iE "^[[:space:]]*$2[[:space:]]*=" "$1" | tail -1 | cut -d= -f2- | tr -d '\r' | sed 's/^[[:space:]]*//;s/[[:space:]]*$//' | tr 'A-Z' 'a-z'
+  as_student cat -- "$1" 2>/dev/null | grep -iE "^[[:space:]]*$2[[:space:]]*=" | tail -1 | cut -d= -f2- | tr -d '\r' | sed 's/^[[:space:]]*//;s/[[:space:]]*$//' | tr 'A-Z' 'a-z'
 }
 expect_answer() { # file key expected "label"
   local got; got="$(answer "$1" "$2" || true)"
@@ -105,8 +130,11 @@ expect_answer() { # file key expected "label"
   if [ "$got" = "$(echo "$3" | tr 'A-Z' 'a-z')" ]; then pass "$4"; else fail "$4: '$2=$got' is not right yet"; fi
 }
 
-student_dir() { # make a learner-owned folder
-  install -d -o student -g student -m 0755 "$1"
+student_dir() { # make a learner-owned folder (created by the learner: no root chown through symlinks)
+  case "$1" in
+    "$SH"/*) as_student mkdir -p -- "$1" ;;
+    *) install -d -o student -g student -m 0755 "$1" ;;
+  esac
 }
 
 perm_of() { stat -c '%a' "$1" 2>/dev/null; }

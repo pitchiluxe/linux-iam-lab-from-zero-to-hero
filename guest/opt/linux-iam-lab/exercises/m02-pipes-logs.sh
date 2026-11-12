@@ -39,7 +39,7 @@ EOF
     chmod 644 "$LOGF"
   fi
   student_dir "$SH/lab"; student_dir "$SH/lab/m02"
-  if [ "$RESET" = 1 ]; then rm -f "$SH/lab/m02/failed-logins.txt"; fi
+  if [ "$RESET" = 1 ]; then as_student rm -f -- "$SH/lab/m02/failed-logins.txt"; fi
 }
 m02_expected() {
   E_TOTAL=$(grep -c "Failed password" "$LOGF")

@@ -2,7 +2,7 @@
 do_setup() {
   systemctl enable --now falcon-web.service >/dev/null 2>&1 || true
   student_dir "$SH/lab"; student_dir "$SH/lab/m02"
-  if [ "$RESET" = 1 ]; then rm -f "$SH/lab/m02/falcon.txt"; fi
+  if [ "$RESET" = 1 ]; then as_student rm -f -- "$SH/lab/m02/falcon.txt"; fi
 }
 do_check() {
   local F="$SH/lab/m02/falcon.txt"

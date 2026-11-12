@@ -17,9 +17,11 @@ Root only (used by the Windows scripts): selftest, export-bundle <file>, import-
 """
 import json
 import os
+import shutil
 import socket
 import subprocess
 import sys
+import tempfile
 
 sys.path.insert(0, "/opt/linux-iam-lab/lib")
 import labcourse  # noqa: E402
@@ -183,20 +185,35 @@ def cmd_selftest(_):
 def cmd_export(args):
     require_root()
     out = args[0] if args else "/tmp/lab-export.tar.gz"
-    tmp = "/tmp/lab-export-stage"
-    subprocess.call(["rm", "-rf", tmp])
-    os.makedirs(tmp + "/export")
-    subprocess.call(["cp", f"{VAR}/progress.json", tmp + "/export/progress.json"])
-    if os.path.exists(f"{VAR}/capstone.json"):
-        subprocess.call(["cp", f"{VAR}/capstone.json", tmp + "/export/capstone.json"])
-    subprocess.call(["tar", "-czf", tmp + "/export/student-home.tar.gz", "--exclude=.cache",
-                     "--exclude=.ssh/id_*", "-C", "/home", "student"])
-    with open(tmp + "/export/README.txt", "w") as fh:
-        fh.write("Linux IAM Lab export\nprogress.json: exercise checkmarks (import with: sudo lab import-progress progress.json)\n"
-                 "student-home.tar.gz: /home/student (private keys excluded)\n")
-    subprocess.check_call(["tar", "-czf", out, "-C", tmp, "export"])
-    os.chmod(out, 0o644)
-    subprocess.call(["rm", "-rf", tmp])
+    # Private staging folder (mkdtemp: unpredictable name, mode 0700) - never a fixed /tmp path
+    # that another account could pre-create or symlink.
+    tmp = tempfile.mkdtemp(prefix="lab-export-", dir=os.path.dirname(os.path.abspath(out)))  # same filesystem as `out`
+    try:
+        os.makedirs(tmp + "/export", mode=0o700)
+        shutil.copyfile(f"{VAR}/progress.json", tmp + "/export/progress.json")
+        if os.path.exists(f"{VAR}/capstone.json"):
+            shutil.copyfile(f"{VAR}/capstone.json", tmp + "/export/capstone.json")
+        # The learner's home is archived AS the learner (root never walks learner-controlled paths).
+        with open(tmp + "/export/student-home.tar.gz", "wb") as fh:
+            subprocess.call(["runuser", "-u", "student", "--", "tar", "-czf", "-", "--exclude=.cache",
+                             "--exclude=.ssh/id_*", "-C", "/home", "student"], stdout=fh, cwd="/")
+        with open(tmp + "/export/README.txt", "w") as fh:
+            fh.write("Linux IAM Lab export\nprogress.json: exercise checkmarks (import with: sudo lab import-progress progress.json)\n"
+                     "student-home.tar.gz: /home/student (private keys excluded)\n")
+        staged = tmp + "/lab-export.tar.gz"
+        subprocess.check_call(["tar", "-czf", staged, "-C", tmp, "export"])
+        # Readable only by the lab's Windows-side admin account (labctl), which copies it out.
+        os.chmod(staged, 0o600)
+        try:
+            shutil.chown(staged, "labctl", "labctl")
+        except (LookupError, PermissionError):
+            pass
+        # rename() replaces whatever is at `out` (even a planted symlink) instead of writing through it
+        if os.path.isdir(out) and not os.path.islink(out):
+            shutil.rmtree(out)
+        os.replace(staged, out)
+    finally:
+        shutil.rmtree(tmp, ignore_errors=True)
     print(out)
 
 

@@ -59,7 +59,7 @@ EOF
     remove_user jlee
     rm -rf /home/jlee
     rm -f "$RULE" "$ARCH" /srv/projects/falcon/.cap-check-*
-    rm -rf "$RES" "$SH/capstone"
+    rm -rf "$RES"; as_student rm -rf -- "$SH/capstone"
     rm -f "$CS"; cs_set stage 1; cs_set fault ""
   fi
   install -d -m 0750 "$RES"
@@ -184,8 +184,9 @@ do_stage() {
     next) do_check; finish ;;
     evidence)
       if [ "$stage" -lt 4 ]; then echo "FAIL: finish CAP-9001 to CAP-9003 first (current stage $stage)"; return 1; fi
-      install -d -o student -g student "$SH/capstone" "$EVD"
+      as_student mkdir -p -- "$EVD"   # the learner's folder: written as the learner, never as root
       local r="$EVD/CAP-9001-test-report-$(date +%Y%m%d-%H%M%S).txt"
+      local notes_sum; notes_sum="$(as_student sha256sum -- "$EVD/notes.md" 2>/dev/null | cut -d' ' -f1)"
       {
         echo "Linux IAM Lab - Capstone test report (fictional contractor Jordan Lee, jlee)"
         echo "Generated: $(date -Is) on $(hostname) by the lab agent for learner 'student'"
@@ -195,9 +196,8 @@ do_stage() {
         echo "=== Re-test of revocation at report time ==="
         FAILED=0; matrix_revoked
         echo
-        [ -f "$EVD/notes.md" ] && echo "notes.md sha256: $(sha256sum "$EVD/notes.md" | cut -d' ' -f1)"
-      } > "$r"
-      chown student:student "$r"
+        [ -n "$notes_sum" ] && echo "notes.md sha256: $notes_sum"
+      } | as_student tee -- "$r" >/dev/null
       echo "PASS: report written to $r"
       ;;
     *) echo "use: status | next | evidence"; return 2;;
@@ -225,9 +225,8 @@ do_solve() {
       mkdir -p /srv/archive/offboarded; tar -czf "$ARCH" -C /home jlee
       ;;
     4)
-      install -d -o student -g student "$SH/capstone" "$EVD"
-      printf '# Evidence\nCAP-9001 onboarding done and tested.\nCAP-9002 root cause: %s (permission/expiry/shell/fingerprint checked) fixed.\nCAP-9003 revocation done, home archived.\n' "$(cs_get fault)" > "$EVD/notes.md"
-      chown student:student "$EVD/notes.md"
+      as_student mkdir -p -- "$EVD"
+      printf '# Evidence\nCAP-9001 onboarding done and tested.\nCAP-9002 root cause: %s (permission/expiry/shell/fingerprint checked) fixed.\nCAP-9003 revocation done, home archived.\n' "$(cs_get fault)" | as_student tee -- "$EVD/notes.md" >/dev/null
       do_stage evidence >/dev/null
       ;;
   esac

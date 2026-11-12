@@ -3,7 +3,7 @@ SCRIPT="$SH/bin/access-report.sh"
 HEADER="user,uid,primary_group,groups,shell,password_status,account_expires,sudo"
 do_setup() {
   student_dir "$SH/bin"
-  if [ "$RESET" = 1 ]; then rm -f "$SCRIPT"; rm -rf "$SH/reports"; fi
+  if [ "$RESET" = 1 ]; then as_student rm -rf -- "$SCRIPT" "$SH/reports"; fi
 }
 expected_row() { # user -> the row the script should produce
   local user=$1 uid shell primary groups pw exp s
@@ -19,13 +19,18 @@ expected_row() { # user -> the row the script should produce
 do_check() {
   [ -f "$SCRIPT" ] || { fail "$SCRIPT does not exist yet"; return; }
   [ -x "$SCRIPT" ] && pass "script is executable" || { fail "script is not executable (chmod +x)"; return; }
-  grep -q 'set -euo pipefail' "$SCRIPT" && pass "uses set -euo pipefail" || fail "add set -euo pipefail"
-  local tmp; tmp="$(mktemp -d /tmp/lab-ar-XXXX)"
+  as_student grep -q 'set -euo pipefail' "$SCRIPT" && pass "uses set -euo pipefail" || fail "add set -euo pipefail"
+  # The learner's script needs root (passwd -S, chage -l), but the learner wrote it, so it runs
+  # as root only inside a sandbox: read-only system, no network, no systemd, only $tmp writable.
+  # A private copy is run, so the file cannot be swapped between the checks above and the run.
+  local tmp src; tmp="$(sandbox_dir)"; src="$(mktemp /var/lib/lab-check/src-XXXXXX)"
+  as_student cat -- "$SCRIPT" > "$src"; chmod 0500 "$src"
   local before after; before="$(sha256sum /etc/passwd /etc/group /etc/shadow /etc/gshadow | sha256sum)"
   local p1 p2 rc
-  p1="$(cd /tmp && HOME=/home/student timeout 120 bash "$SCRIPT" "$tmp" 2>/dev/null)"; rc=$?
+  p1="$(sandbox_root "$tmp" 120 bash "$src" "$tmp" 2>/dev/null)"; rc=$?
   sleep 1.2
-  p2="$(cd /tmp && HOME=/home/student timeout 120 bash "$SCRIPT" "$tmp" 2>/dev/null)"
+  p2="$(sandbox_root "$tmp" 120 bash "$src" "$tmp" 2>/dev/null)"
+  rm -f "$src"
   after="$(sha256sum /etc/passwd /etc/group /etc/shadow /etc/gshadow | sha256sum)"
   [ "$rc" = 0 ] && pass "runs with sudo and exits 0" || fail "script exited with status $rc"
   [ "$before" = "$after" ] && pass "read-only: identity files unchanged after two runs" || fail "the script changed /etc/passwd, group or shadow!"

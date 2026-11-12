@@ -5,11 +5,15 @@ do_setup() {
   printf 'IAM-6001 attachment (fictional)\nRequester: Ben Tran (btran)\nKey: btran_laptop (ED25519)\nFingerprint: %s\n' "$(key_fpr "$VAR/keys/btran_laptop.pub")" > "$DATA/tickets/IAM-6001.txt"
   if [ "$RESET" = 1 ]; then
     rm -f /home/btran/.ssh/authorized_keys
-    if [ -f "$SH/.ssh/id_ed25519.pub" ] && [ -f "$SH/.ssh/authorized_keys" ]; then
-      grep -vF "$(cat "$SH/.ssh/id_ed25519.pub")" "$SH/.ssh/authorized_keys" > "$SH/.ssh/authorized_keys.new" || true
-      mv "$SH/.ssh/authorized_keys.new" "$SH/.ssh/authorized_keys"; chown student:student "$SH/.ssh/authorized_keys"; chmod 600 "$SH/.ssh/authorized_keys"
-    fi
-    rm -f "$SH/.ssh/id_ed25519" "$SH/.ssh/id_ed25519.pub"
+    # Done as the learner, inside the learner's own home (no root writes through planted symlinks).
+    as_student bash -c '
+      k=~/.ssh/id_ed25519.pub; ak=~/.ssh/authorized_keys
+      if [ -f "$k" ] && [ -f "$ak" ]; then
+        tmp="$(mktemp ~/.ssh/.authorized_keys.XXXXXX)"
+        grep -vF "$(cat "$k")" "$ak" > "$tmp" || true
+        chmod 600 "$tmp"; mv -f "$tmp" "$ak"
+      fi
+      rm -f ~/.ssh/id_ed25519 ~/.ssh/id_ed25519.pub'
   fi
 }
 do_check() {

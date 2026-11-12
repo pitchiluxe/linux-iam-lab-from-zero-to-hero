@@ -1,7 +1,7 @@
 # m01-orientation - sourced by lib/exrun.sh (common.sh already loaded)
 do_setup() {
   student_dir "$SH/lab"; student_dir "$SH/lab/m01"
-  if [ "$RESET" = 1 ]; then rm -f "$SH/lab/m01/orientation.txt"; fi
+  if [ "$RESET" = 1 ]; then as_student rm -f -- "$SH/lab/m01/orientation.txt"; fi
 }
 do_check() {
   local F="$SH/lab/m01/orientation.txt"

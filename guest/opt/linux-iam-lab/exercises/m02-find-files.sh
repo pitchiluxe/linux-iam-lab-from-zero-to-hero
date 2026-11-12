@@ -16,7 +16,7 @@ do_setup() {
     chmod 1777 "$S2/tmp"   # a world-writable FOLDER (sticky) - not a file, must not be listed
   fi
   student_dir "$SH/lab"; student_dir "$SH/lab/m02"
-  if [ "$RESET" = 1 ]; then rm -f "$SH/lab/m02/world-writable.txt" "$SH/lab/m02/orphans.txt"; fi
+  if [ "$RESET" = 1 ]; then as_student rm -f -- "$SH/lab/m02/world-writable.txt" "$SH/lab/m02/orphans.txt"; fi
 }
 do_check() {
   local W="$SH/lab/m02/world-writable.txt" O="$SH/lab/m02/orphans.txt"

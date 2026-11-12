@@ -20,14 +20,15 @@ EOF
   chmod 644 "$HB"/*.txt
   student_dir "$SH/lab"; student_dir "$SH/lab/m01"
   if [ "$RESET" = 1 ] || [ ! -e "$SH/lab/m01/.m01-files-ready" ]; then
-    rm -rf "$SH/lab/m01/inbox" "$SH/lab/m01/tickets" "$SH/lab/m01/onboarding-checklist.txt"
+    as_student rm -rf -- "$SH/lab/m01/inbox" "$SH/lab/m01/tickets" "$SH/lab/m01/onboarding-checklist.txt"
     student_dir "$SH/lab/m01/inbox"
-    printf 'Ticket: HELP-1001\nRequester: Jae Kim\nSummary: Printer mapping on finance laptop\nStatus: CLOSED\n' > "$SH/lab/m01/inbox/ticket-1001.txt"
-    printf 'Ticket: HELP-1002\nRequester: Ben Tran\nSummary: Cannot open the Falcon project share\nStatus: OPEN\n' > "$SH/lab/m01/inbox/ticket-1002.txt"
-    printf 'Ticket: HELP-1003\nRequester: Hana Lopez\nSummary: New starter in HR needs an account next Monday\nStatus: OPEN\n' > "$SH/lab/m01/inbox/ticket-1003.txt"
-    echo 'unsaved draft' > "$SH/lab/m01/inbox/draft.txt~"
-    chown -R student:student "$SH/lab/m01/inbox"
-    touch "$SH/lab/m01/.m01-files-ready"; chown student:student "$SH/lab/m01/.m01-files-ready"
+    as_student bash -c '
+      cd ~/lab/m01/inbox || exit 1
+      printf "Ticket: HELP-1001\nRequester: Jae Kim\nSummary: Printer mapping on finance laptop\nStatus: CLOSED\n" > ticket-1001.txt
+      printf "Ticket: HELP-1002\nRequester: Ben Tran\nSummary: Cannot open the Falcon project share\nStatus: OPEN\n" > ticket-1002.txt
+      printf "Ticket: HELP-1003\nRequester: Hana Lopez\nSummary: New starter in HR needs an account next Monday\nStatus: OPEN\n" > ticket-1003.txt
+      echo "unsaved draft" > "draft.txt~"
+      touch ../.m01-files-ready'
   fi
 }
 do_check() {

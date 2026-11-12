@@ -67,6 +67,15 @@ Windows host (standard user, no admin)
 | `ttyd` | `student` | the browser terminal |
 | `ollama` | `ollama` | the tutor model, loopback only |
 
+**Rule for root code (agent, exercise setup/reset/check, export):** the learner controls
+`/home/student` and can plant symlinks there, so root never writes, deletes, `chown`s or unpacks
+anything in it. Those operations run as the learner (`as_student` in `lib/common.sh`). The one
+place where learner-written code needs root, the m08 access-report check, runs a private copy
+in a systemd sandbox (`sandbox_root`): read-only system, private `/tmp`, no network, no
+systemd/D-Bus, lab secrets hidden, only the capabilities needed to read account data. This keeps
+the agent from becoming a way around the learner's own sudo password.
+`tests/guest/run-security-regression.sh` tries each of these attacks as the learner.
+
 ## Files
 
 - `Install-LinuxIAMLab.ps1` - entry point.

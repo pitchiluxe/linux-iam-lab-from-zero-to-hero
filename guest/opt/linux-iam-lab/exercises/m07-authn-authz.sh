@@ -1,7 +1,7 @@
 # m07-authn-authz
 do_setup() {
   student_dir "$SH/lab"; student_dir "$SH/lab/m07"
-  if [ "$RESET" = 1 ]; then rm -f "$SH/lab/m07/stack.txt"; fi
+  if [ "$RESET" = 1 ]; then as_student rm -f -- "$SH/lab/m07/stack.txt"; fi
   # leave an authorization denial for tcole in the log
   pam_login tcole "$(persona_pw tcole)" || true
 }

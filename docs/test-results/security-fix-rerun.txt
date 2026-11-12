@@ -1,0 +1,27 @@
+# Rerun after the security-review fixes, 2026-11-12 (tail of each suite).
+# The one exercise failure (m08-auditd: ausearch read the SSH pipe instead of the log) was fixed with --input-logs and re-tested separately.
+
+ok   - m08-evidence check FAILS on the untouched scenario (negative control)
+ok   - m08-evidence check PASSES after the walkthrough (13 assertions)
+ok   - m08-evidence retry (exercise reset) restores the starting state
+        (13s)
+ok   - m09-capstone reset
+ok   - m09-capstone stage1 check fails before work (exit 1)
+ok   - m09-capstone stage 1 passes and advances
+ok   - m09-capstone CAP-9002 injected fault 'expired' breaks the login (check fails)
+ok   - m09-capstone stage 2 passes and advances
+ok   - m09-capstone stage 3 passes and advances
+ok   - m09-capstone stage 4 (evidence) passes - capstone complete
+ok   - m09-capstone evidence report generated
+ok   - m09-capstone reset removes jlee and restarts at CAP-9001
+
+SUMMARY: 132 ok, 1 failed, 0 skipped
+======
+ok   - lab rescue sshd quarantines the bad file and sshd -t passes
+ok   - lab rescue sssd restores directory lookups
+ok   - simulated student lockout (faillock)
+ok   - lab rescue faillock unlocks student
+ok   - exercise reset repairs learner-broken permissions (m04-traversal)
+ok   - selftest passes after all the breakage and recovery
+
+SUMMARY: 40 ok, 0 failed

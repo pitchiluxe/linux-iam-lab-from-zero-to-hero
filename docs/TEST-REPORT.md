@@ -107,6 +107,26 @@ On a host without the Windows hypervisor the VM can use 2+ vCPUs and answers are
 | 15 | blank portal in the Windows browser | an apostrophe broke a JavaScript string; the browser cached it | fixed and checked with `node --check`; Ctrl+F5 reloads |
 | 16 | extra blank browser windows at desktop login | Epiphany restored its old session / `--new-window` added a start page | session restore off, saved session cleared, launched with the URL only |
 
+## Security review fixes (2026-11-12)
+
+An automated review of the published code found three ways a program running as the learner
+(`student`) could get root inside the lab VM **without the sudo password**, by abusing lab actions
+that run as root. Impact was limited to the disposable lab VM; Windows and other VMs were never
+reachable. All are fixed and covered by `tests/guest/run-security-regression.sh`.
+
+| # | Finding | Fix |
+|---|---|---|
+| S1 (high) | m08-access-report *Check my work* ran the learner's own `~/bin/access-report.sh` as root | runs a private copy as root only inside a systemd sandbox (`sandbox_root` in `lib/common.sh`): read-only system, private `/tmp`, no network, `/run` replaced (no systemd/D-Bus), lab secrets hidden, capabilities limited to reading account data |
+| S2 (high) | exercise retry/setup wrote, deleted and `chown`ed paths in `/home/student` as root (e.g. m06 `authorized_keys`, `student_dir`), so a planted symlink redirected root to system files | every file operation in the learner's home now runs **as the learner** (`as_student`); learner archives and answer files are read as the learner |
+| S3 (medium) | `lab export-bundle` staged in a fixed `/tmp` folder and left a world-readable bundle | private `mkdtemp` staging, bundle mode 600 owned by `labctl`, written by rename (a planted symlink is replaced, not followed) |
+
+Verified in the VM after the fix:
+- security regression 13/13: each exploit attempted as the learner (write `/etc`, setuid shell, sudo rule, symlinked `authorized_keys`, `~/lab -> /etc`, symlinked export path, sandbox reaching systemd/secrets/network) is blocked, and the correct m08 solution still passes inside the sandbox;
+- exercise suite 132/133. The one failure, m08-auditd, was not caused by these fixes: `ausearch` reads standard input when it is a pipe (as in the SSH test harness) instead of the audit log. The check now uses `ausearch --input-logs` and was re-tested (negative control fails; reset → solve → check passes 10/10 twice, with piped and with empty stdin). Learners were not affected, because the portal runs checks with no input;
+- platform suite 40/40.
+
+Raw: [`test-results/security-fix-rerun.txt`](test-results/security-fix-rerun.txt).
+
 ## Remaining limitations
 
 - Tutor answers are slow on this host (see above) because the Windows hypervisor forces 1 vCPU; lessons, hints, walkthroughs and checks do not depend on it.

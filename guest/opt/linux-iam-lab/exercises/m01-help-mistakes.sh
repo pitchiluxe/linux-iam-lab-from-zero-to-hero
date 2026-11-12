@@ -3,12 +3,13 @@ M="$SH/lab/m01/messy"
 do_setup() {
   student_dir "$SH/lab"; student_dir "$SH/lab/m01"
   if [ "$RESET" = 1 ] || [ ! -d "$M" ]; then
-    rm -rf "$M"; rm -f "$SH/lab/m01/help.txt"
+    as_student rm -rf -- "$M"; as_student rm -f -- "$SH/lab/m01/help.txt"
     student_dir "$M"
-    echo 'Q4 numbers: draft (fictional)' > "$M/quarterly report.txt"
-    echo 'old notes, safe to delete' > "$M/-old-notes.txt"
-    echo 'do not delete me' > "$M/keep-me.txt"
-    chown student:student "$M"/*  "$M/-old-notes.txt"
+    as_student bash -c '
+      cd ~/lab/m01/messy || exit 1
+      echo "Q4 numbers: draft (fictional)" > "quarterly report.txt"
+      echo "old notes, safe to delete" > ./-old-notes.txt
+      echo "do not delete me" > keep-me.txt'
   fi
 }
 do_check() {

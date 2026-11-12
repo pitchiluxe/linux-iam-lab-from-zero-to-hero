@@ -2,26 +2,28 @@
 ARC="$SH/evidence/access-review-2026Q4.tar.gz"
 do_setup() {
   student_dir "$SH/evidence"
-  if [ "$RESET" = 1 ]; then rm -rf "$SH/evidence/access-review-2026Q4" "$ARC"; fi
+  if [ "$RESET" = 1 ]; then as_student rm -rf -- "$SH/evidence/access-review-2026Q4" "$ARC"; fi
 }
 do_check() {
   [ -f "$ARC" ] || { fail "$ARC does not exist yet"; return; }
   pass "archive exists"
-  local tmp; tmp="$(mktemp -d /tmp/lab-ev-XXXX)"
-  if ! tar -xzf "$ARC" -C "$tmp" 2>/dev/null; then fail "archive cannot be extracted"; rm -rf "$tmp"; return; fi
+  # The archive is the learner's: unpack and read it AS the learner, never as root.
+  local tmp; tmp="$(as_student mktemp -d /tmp/lab-ev-XXXXXX)"
+  rd() { as_student cat -- "$D/$1" 2>/dev/null; }
+  if ! as_student tar -xzf "$ARC" -C "$tmp" 2>/dev/null; then fail "archive cannot be extracted"; as_student rm -rf -- "$tmp"; return; fi
   local D="$tmp/access-review-2026Q4" f
-  [ -d "$D" ] && pass "contains the folder access-review-2026Q4/" || { fail "archive must contain the folder access-review-2026Q4/ (relative path)"; rm -rf "$tmp"; return; }
+  [ -d "$D" ] && pass "contains the folder access-review-2026Q4/" || { fail "archive must contain the folder access-review-2026Q4/ (relative path)"; as_student rm -rf -- "$tmp"; return; }
   for f in access-report.csv sudo-rules.txt group-members.txt ssh-keys.txt SHA256SUMS; do
-    [ -s "$D/$f" ] && pass "$f present" || fail "$f missing or empty"
+    [ -n "$(rd "$f" | head -c1)" ] && pass "$f present" || fail "$f missing or empty"
   done
-  (cd "$D" && sha256sum -c SHA256SUMS >/dev/null 2>&1) && pass "sha256sum -c SHA256SUMS: all files verify" || fail "checksums do not verify"
-  local listed; listed="$(awk '{print $2}' "$D/SHA256SUMS" 2>/dev/null | sed 's/^\*//' | sort | paste -sd, -)"
+  as_student bash -c 'cd "$1" && sha256sum -c SHA256SUMS' _ "$D" >/dev/null 2>&1 && pass "sha256sum -c SHA256SUMS: all files verify" || fail "checksums do not verify"
+  local listed; listed="$(rd SHA256SUMS | awk '{print $2}' | sed 's/^\*//' | sort | paste -sd, -)"
   [ "$listed" = "access-report.csv,group-members.txt,ssh-keys.txt,sudo-rules.txt" ] && pass "SHA256SUMS covers the four evidence files" || fail "SHA256SUMS should list exactly the four evidence files"
-  [ "$(head -1 "$D/access-report.csv" | tr -d '\r')" = "user,uid,primary_group,groups,shell,password_status,account_expires,sudo" ] && pass "access report has the AUD-8003 header" || fail "access-report.csv does not have the AUD-8003 header"
-  grep -q '^finance:' "$D/group-members.txt" && grep -q '^ssh-users:' "$D/group-members.txt" && pass "group membership captured" || fail "group-members.txt should contain getent group lines (finance, ssh-users, ...)"
-  grep -q 'SHA256:' "$D/ssh-keys.txt" && pass "SSH key fingerprints captured" || fail "ssh-keys.txt should contain fingerprints (ssh-keygen -lf)"
-  grep -q '%sudo' "$D/sudo-rules.txt" && ! grep -q '^\s*#' "$D/sudo-rules.txt" && pass "sudo rules captured without comments" || fail "sudo-rules.txt should contain the rules (e.g. %sudo ...) and no comment lines"
-  rm -rf "$tmp"
+  [ "$(rd access-report.csv | head -1 | tr -d '\r')" = "user,uid,primary_group,groups,shell,password_status,account_expires,sudo" ] && pass "access report has the AUD-8003 header" || fail "access-report.csv does not have the AUD-8003 header"
+  rd group-members.txt | grep -q '^finance:' && rd group-members.txt | grep -q '^ssh-users:' && pass "group membership captured" || fail "group-members.txt should contain getent group lines (finance, ssh-users, ...)"
+  rd ssh-keys.txt | grep -q 'SHA256:' && pass "SSH key fingerprints captured" || fail "ssh-keys.txt should contain fingerprints (ssh-keygen -lf)"
+  rd sudo-rules.txt | grep -q '%sudo' && ! rd sudo-rules.txt | grep -q '^\s*#' && pass "sudo rules captured without comments" || fail "sudo-rules.txt should contain the rules (e.g. %sudo ...) and no comment lines"
+  as_student rm -rf -- "$tmp"
 }
 do_solve() {
   [ -x "$SH/bin/access-report.sh" ] || /opt/linux-iam-lab/lib/exrun.sh m08-access-report solve >/dev/null

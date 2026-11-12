@@ -11,7 +11,7 @@ m03i_expected() {
 do_setup() {
   student_dir "$SH/lab"; student_dir "$SH/lab/m03"
   if [ "$RESET" = 1 ]; then
-    rm -f "$SH/lab/m03/identity-answers.txt"
+    as_student rm -f -- "$SH/lab/m03/identity-answers.txt"
     chage -E 2025-12-31 kwright
   fi
 }

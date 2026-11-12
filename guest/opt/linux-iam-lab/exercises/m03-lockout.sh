@@ -6,7 +6,7 @@ do_setup() {
     faillock --user enovak --reset
     local i; for i in 1 2 3 4 5 6; do pam_login enovak "OldPassword-$i" || true; done
     chage -E 2025-12-31 kwright
-    rm -f "$SH/lab/m03/lockout.txt"
+    as_student rm -f -- "$SH/lab/m03/lockout.txt"
     touch "$VAR/m03-lockout.ready"
   fi
   student_dir "$SH/lab"; student_dir "$SH/lab/m03"

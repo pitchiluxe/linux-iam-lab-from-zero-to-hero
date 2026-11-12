@@ -7,7 +7,7 @@ put_legacy_rule() {
 }
 do_setup() {
   student_dir "$SH/lab"; student_dir "$SH/lab/m05"
-  if [ "$RESET" = 1 ]; then rm -f "$SH/lab/m05/sudo-review.txt"; fi
+  if [ "$RESET" = 1 ]; then as_student rm -f -- "$SH/lab/m05/sudo-review.txt"; fi
   # The rule is part of the scenario. Recreate it on first setup or on retry.
   if [ "$RESET" = 1 ] || [ ! -f "$VAR/m05-sudo-review.ready" ]; then put_legacy_rule; touch "$VAR/m05-sudo-review.ready"; fi
 }

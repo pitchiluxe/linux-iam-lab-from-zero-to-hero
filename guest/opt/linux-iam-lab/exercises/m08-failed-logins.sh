@@ -2,7 +2,7 @@
 do_setup() {
   student_dir "$SH/lab"; student_dir "$SH/lab/m08"
   if [ "$RESET" = 1 ]; then
-    rm -f "$SH/lab/m08/investigation.txt"
+    as_student rm -f -- "$SH/lab/m08/investigation.txt"
     local i
     for i in $(seq 1 15); do pam_login aokafor "Spring2026-$i" || true; done
     faillock --user aokafor --reset   # keep aokafor usable for other exercises; the log keeps the evidence

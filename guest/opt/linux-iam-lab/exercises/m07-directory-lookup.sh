@@ -2,7 +2,7 @@
 LS() { ldapsearch -LLL -x -ZZ -H ldap://ldap.iamlab.test -b dc=iamlab,dc=test "$@" 2>/dev/null; }
 do_setup() {
   student_dir "$SH/lab"; student_dir "$SH/lab/m07"
-  if [ "$RESET" = 1 ]; then rm -f "$SH/lab/m07/pshah.txt"; fi
+  if [ "$RESET" = 1 ]; then as_student rm -f -- "$SH/lab/m07/pshah.txt"; fi
 }
 do_check() {
   local F="$SH/lab/m07/pshah.txt"

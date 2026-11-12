@@ -7,7 +7,7 @@ do_setup() {
   fi
   return 0
 }
-identity_events() { ausearch -k identity 2>/dev/null | grep -c '^type=SYSCALL'; }
+identity_events() { ausearch --input-logs -k identity 2>/dev/null | grep -c '^type=SYSCALL'; }
 do_check() {
   systemctl is-active --quiet auditd && pass "auditd is running" || { fail "auditd is not running (sudo systemctl start auditd)"; return; }
   [ -f "$AR" ] && pass "$AR exists (rules persist after reboot)" || fail "$AR does not exist"
@@ -21,7 +21,7 @@ do_check() {
   if [ -f "$AR" ]; then
     for p in passwd group shadow gshadow; do grep -qE -- "-w /etc/$p -p wa -k identity" "$AR" || { fail "$AR is missing the /etc/$p rule"; break; }; done
   fi
-  ausearch -k identity -i --start today 2>/dev/null | grep -q 'auid=student' && pass "found identity events attributed to auid=student (your test)" || fail "no identity event with auid=student yet - create and delete a test user after loading the rules"
+  ausearch --input-logs -k identity -i --start today 2>/dev/null | grep -q 'auid=student' && pass "found identity events attributed to auid=student (your test)" || fail "no identity event with auid=student yet - create and delete a test user after loading the rules"
   local n1 n2; n1="$(identity_events)"
   chmod 644 /etc/group
   sleep 1
