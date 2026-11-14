@@ -173,12 +173,12 @@
         </li>
         <li value="7">
           <h3>Authentication and centralized identity</h3>
-          <p>Authentication versus authorization, PAM and NSS, and SSSD reading people from the lab's own LDAP directory.</p>
+          <p>Authentication versus authorization, PAM and NSS, SSSD reading people from the lab's own LDAP directory, building entries with ldapadd, and a group's whole lifecycle from create to delete (the same job as FreeIPA or AD).</p>
           <p class="proof">You keep: a fix made in the directory, not as an exception on one server.</p>
         </li>
         <li value="8">
           <h3>Audit and automate IAM work</h3>
-          <p>journalctl and auth.log, auditd watches on identity files, a rerunnable access-report script, checksummed evidence.</p>
+          <p>journalctl and auth.log, auditd watches on identity files, a rerunnable access-report script, checksummed evidence, and a Nagios-style health check for the identity services.</p>
           <p class="proof">You keep: an access-review evidence package an auditor would accept.</p>
         </li>
         <li value="9">
@@ -253,6 +253,14 @@
         <li><button class="card" aria-expanded="false">
           <span class="card__q">How would you run an access review on Linux?</span>
           <span class="card__a">Module 8. A read-only, rerunnable report script, plus checksummed evidence of users, groups, sudo rules and keys.</span>
+        </button></li>
+        <li><button class="card" aria-expanded="false">
+          <span class="card__q">A project starts Monday and an old group is still around. How do you handle both?</span>
+          <span class="card__a">Module 7. Create the group in the directory with an owner and exact members, check Linux sees it, and delete the expired one.</span>
+        </button></li>
+        <li><button class="card" aria-expanded="false">
+          <span class="card__q">SSSD died and nobody noticed. How do you catch it next time?</span>
+          <span class="card__a">Module 8. A monitoring check with exit codes 0 to 3, failed-login thresholds and JSON from jq.</span>
         </button></li>
       </ul>
     </section>

@@ -279,12 +279,12 @@ RESULT: all checks passed</code></pre>
 <tr><td><strong>4</strong> Control access to files and directories</td><td>permissions, directory traversal, shared folder (setgid), ACLs</td><td>Access tested as two users, one allowed, one denied</td></tr>
 <tr><td><strong>5</strong> Delegate administrative privileges</td><td>sudo review, command delegation, lockout recovery</td><td>One command delegated, nothing more</td></tr>
 <tr><td><strong>6</strong> Secure remote access (SSH)</td><td>key login, broken SSH, sshd hardening, key revocation</td><td>A hardened sshd and a revoked key that stays revoked</td></tr>
-<tr><td><strong>7</strong> Authentication and centralized identity</td><td>authN vs authZ (PAM/NSS), directory lookup, directory-based access</td><td>LDAP users signing in through SSSD</td></tr>
-<tr><td><strong>8</strong> Audit and automate IAM work</td><td>failed logins, auditd, access-report script, evidence package</td><td>An access-review evidence package</td></tr>
+<tr><td><strong>7</strong> Authentication and centralized identity</td><td>authN vs authZ (PAM/NSS), directory lookup, directory-based access, building a directory branch with ldapadd, a project group's lifecycle</td><td>LDAP users signing in through SSSD; groups created and removed at the source</td></tr>
+<tr><td><strong>8</strong> Audit and automate IAM work</td><td>failed logins, auditd, access-report script, evidence package, a Nagios-style health check</td><td>An access-review evidence package and a monitoring check</td></tr>
 <tr><td><strong>9</strong> Capstone</td><td>onboard a contractor → fix a broken login (different for every learner) → revoke everything → evidence</td><td>A portfolio project</td></tr>
 </tbody></table></div>
 <h3 id="e1">The people you will manage</h3>
-<p>All fictional, all at <em>Northwind Labs</em>: Amara Okafor and Jae Kim (Finance), Ben Tran and Eli Novak (Engineering), Chloe Diaz and Hana Lopez (HR), Dev Patel (Helpdesk), Riley Morgan (Audit), and Kai Wright, a contractor whose contract has ended. Service accounts such as <code>svc-falcon</code> run the demo web app.</p>
+<p>All fictional, all at <em>Northwind Labs</em>: Amara Okafor and Jae Kim (Finance), Ben Tran and Eli Novak (Engineering), Chloe Diaz and Hana Lopez (HR), Dev Patel (Helpdesk), Riley Morgan (Audit), and Kai Wright, a contractor whose contract has ended. Service accounts such as <code>svc-falcon</code> run the demo web app. In the LDAP directory (Module 7) you meet Nadia Walker, Priya Shah, Tomas Cole and Mia Fischer, and you add a new IAM analyst, Rosa Lopez.</p>
 <h3 id="e2">Track your progress</h3>
 <p><strong>Progress &amp; lab tools</strong> shows every exercise with a tick when it passes.</p>
 <figure class="photo manual-photo"><img src="img/manual/09-progress-tools.png" alt="Progress page listing every module and exercise with ticks for those passed" loading="lazy" /><figcaption>Your progress, module by module</figcaption></figure>
