@@ -1,0 +1,21 @@
+Linux IAM Lab - exercise tests for m07-ldap-basics, m07-group-lifecycle, m08-health-check
+Run inside LinuxIAM-Lab01 (Ubuntu 24.04) on 2026-11-14 with tests/guest/run-exercise-tests.sh
+
+ok   - m07-ldap-basics reset/start scenario
+ok   - m07-ldap-basics check FAILS on the untouched scenario (negative control)
+ok   - m07-ldap-basics check PASSES after the walkthrough (13 assertions)
+ok   - m07-ldap-basics retry (exercise reset) restores the starting state
+ok   - m07-group-lifecycle reset/start scenario
+ok   - m07-group-lifecycle check FAILS on the untouched scenario (negative control)
+ok   - m07-group-lifecycle check PASSES after the walkthrough (10 assertions)
+ok   - m07-group-lifecycle retry (exercise reset) restores the starting state
+ok   - m08-health-check reset/start scenario
+ok   - m08-health-check check FAILS on the untouched scenario (negative control)
+ok   - m08-health-check check PASSES after the walkthrough (9 assertions)
+ok   - m08-health-check retry (exercise reset) restores the starting state
+
+SUMMARY: 12 ok, 0 failed, 0 skipped
+
+Additionally, the documented Walkthrough commands of each exercise were run as the learner
+(student) after a reset; "lab check" then reported "RESULT: all checks passed" for all three.
+Course loader reports 35 exercises. The three exercises were reset to their starting state afterwards.

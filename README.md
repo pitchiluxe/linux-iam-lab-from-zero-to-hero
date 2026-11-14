@@ -2,7 +2,7 @@
 
 A hands-on Linux course for future **Identity and Access Management analysts and engineers**. You run real commands in your own dedicated Ubuntu Server VM, work realistic tickets, and the lab checks your work by testing access **as the affected users** - can they read the file, log in with the key, run the delegated command, and are they denied everything else?
 
-- 9 modules, 32 ticket-based exercises, a 4-stage capstone
+- 9 modules, 35 ticket-based exercises, a 4-stage capstone
 - Course portal with module map, progress, searchable reference, exercise checks, a Linux web terminal and a local AI tutor (Ollama)
 - Offline after the first install; your other virtual machines are never touched
 

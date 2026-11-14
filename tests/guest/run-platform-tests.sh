@@ -20,7 +20,7 @@ t "wrong token is rejected (403)" "[ \"\$(curl -s -o /dev/null -w '%{http_code}'
 t "foreign Host header is rejected (DNS-rebinding guard)" "[ \"\$(curl -s -o /dev/null -w '%{http_code}' -H 'Host: evil.example' $P/api/health)\" = 403 ]"
 rm -f "$J"
 t "correct token sets an HttpOnly SameSite=Strict cookie" "curl -s -D - -o /dev/null -c $J '$P/?token=$TOK' | grep -qi 'set-cookie: labsession=.*HttpOnly; SameSite=Strict'"
-t "course API returns 9 modules / 32 exercises" "curl -fs -b $J $P/api/course | python3 -c 'import json,sys; d=json.load(sys.stdin); m=d[\"modules\"]; assert len(m)==9 and sum(len(x[\"exercises\"]) for x in m)==32'"
+t "course API returns 9 modules / 35 exercises" "curl -fs -b $J $P/api/course | python3 -c 'import json,sys; d=json.load(sys.stdin); m=d[\"modules\"]; assert len(m)==9 and sum(len(x[\"exercises\"]) for x in m)==35'"
 t "reference API returns 4 documents" "curl -fs -b $J $P/api/reference | python3 -c 'import json,sys; assert len(json.load(sys.stdin)[\"docs\"])==4'"
 t "POST without the X-Lab header is refused (CSRF guard)" "[ \"\$(curl -s -o /dev/null -w '%{http_code}' -b $J -X POST $P/api/check/m01-orientation)\" = 401 ]"
 t "check via portal -> agent works and returns PASS/FAIL lines" "curl -fs -b $J -H 'X-Lab: 1' -X POST $P/api/check/m01-orientation | grep -q 'RESULT'"

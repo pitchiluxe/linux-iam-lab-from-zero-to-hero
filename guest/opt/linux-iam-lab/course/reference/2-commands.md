@@ -160,8 +160,11 @@ sudo journalctl -u ssh -n 30 --no-pager
 ### crontab - scheduled jobs
 `crontab -l` list yours; `sudo crontab -l -u USER`; `sudo crontab -r -u USER` remove.
 
-### ldapsearch / ldapmodify - directory
-`-x` simple bind, `-ZZ` require StartTLS, `-H ldap://ldap.iamlab.test`, `-b BASE`, `-D BINDDN -y PWFILE`, filter `'(uid=pshah)'`, `-f FILE.ldif` (ldapmodify).
+### ldapsearch / ldapadd / ldapmodify / ldapdelete - directory
+`-x` simple bind, `-ZZ` require StartTLS, `-H ldap://ldap.iamlab.test`, `-b BASE`, `-D BINDDN -y PWFILE`, filter `'(uid=pshah)'`, `-LLL` plain LDIF output, `-f FILE.ldif` (ldapadd new entries, ldapmodify changes). `ldapdelete ... DN...` removes entries (children before parents). Prefer `-y FILE` over `-w PASSWORD`: a password on the command line shows in `ps` and history.
+
+### jq - JSON
+`jq .` pretty-print; `jq -r '.status'` one field as raw text; `jq -n --arg k v --argjson n 5 '{k: $k, n: $n}'` build JSON safely; `jq -e EXPR` exit code from the result.
 
 ### sssctl / sss_cache - SSSD
 `sudo sssctl domain-status iamlab.test`, `sudo sssctl user-checks USER`, `sudo sss_cache -E` (expire all cached entries).

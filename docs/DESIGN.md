@@ -81,7 +81,7 @@ the agent from becoming a way around the learner's own sudo password.
 - `Install-LinuxIAMLab.ps1` - entry point.
 - `windows\` - common library, Start/Stop/Reset/Export/Uninstall scripts, config, Ubuntu signing key.
 - `guest\provision.sh` - in-VM provisioning; `guest\systemd\` - units.
-- `guest\opt\linux-iam-lab\` - `bin\` (lab CLI, agent, portal), `lib\` (helpers, baseline, directory, selftest, exercise runner), `exercises\` (32 exercise scripts), `course\` (9 lessons, 32 exercises, 4 references), `portal\static\` (UI).
+- `guest\opt\linux-iam-lab\` - `bin\` (lab CLI, agent, portal), `lib\` (helpers, baseline, directory, selftest, exercise runner), `exercises\` (35 exercise scripts), `course\` (9 lessons, 35 exercises, 4 references), `portal\static\` (UI).
 - `tests\` - host tests, guest exercise and platform test harnesses, WSL test helper.
 - `tools\build_offline_reference.py` - builds the single-file offline reference.
 - `docs\` - this file, the test report, offline reference.
